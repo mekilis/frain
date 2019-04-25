@@ -1,6 +1,8 @@
 package frain
 
 import (
+	"errors"
+	"fmt"
 	"time"
 )
 
@@ -81,4 +83,29 @@ type IncidentUpdate struct {
 
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
+}
+
+// Init is a simple method to print various build info
+func Init() {
+	fmt.Println(fmt.Sprintf("Frainserver v%s", VersionNumber))
+}
+
+// GetPage returns all information relating to a particular service
+func GetPage(pageName string) (*Page, error) {
+	return nil, errors.New("this function has not yet been implemented")
+}
+
+// GetComponent gets the information relating to a given service component
+func GetComponent(compID string) (*Component, error) {
+	return nil, errors.New("this function has not yet been implemented")
+}
+
+// GetService gets the information relating to a given service
+func GetService(serviceID string) (*Service, error) {
+	return nil, errors.New("this function has not yet been implemented")
+}
+
+// GetIncident gets incident information as well as associated events
+func GetIncident(incidentID string) (*Incident, error) {
+	return nil, errors.New("this function has not yet been implemented")
 }

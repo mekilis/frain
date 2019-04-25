@@ -7,25 +7,29 @@ import (
 	"text/tabwriter"
 )
 
-// Report
+// Report is an interface implemented by types that generates report in different formats.
 type Report interface {
 	Incident(*Incident) error
 	Service(*Service) error
 	All() error
 }
 
+// Text is a construct to display the page information in text
 type Text struct {
 	Data *Page
 }
 
+// Incident implements the Report interface
 func (t Text) Incident(i *Incident) error {
 	return nil
 }
 
+// Service implements the Report interface
 func (t Text) Service(s *Service) error {
 	return nil
 }
 
+// All implements the Report interface
 func (t Text) All() error {
 	w := new(tabwriter.Writer)
 

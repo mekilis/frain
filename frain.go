@@ -1,4 +1,4 @@
-package frain
+package main
 
 import (
 	"errors"

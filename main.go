@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"strings"
 )
 
 var (
@@ -44,5 +45,61 @@ func main() {
 		Init()
 		flag.Usage()
 		os.Exit(0)
+	}
+
+	argsLen := len(os.Args)
+	if argsLen < 2 {
+		fmt.Println("Error: no service specified.")
+		flag.Usage()
+		os.Exit(1)
+	}
+
+	format := strings.ToLower(*formatFlag)
+	if format != "txt" && format != "json" && format != "xml" {
+		fmt.Printf("Error: bad format specified '%s'\n", format)
+		flag.Usage()
+		os.Exit(1)
+	}
+
+	//====================== STUB ===========
+	service := os.Args[1]
+
+	// assuming data has been fetched from database or api
+	pages := map[string]Page{
+		"github": {
+			Name: "github",
+			Services: []Service{
+				{ID: "service-0", Name: "Website", Status: "Scheduled Maintenance"},
+				{ID: "service-1", Name: "Github Operations", Status: "Operational"},
+				{ID: "service-2", Name: "API Services", Status: "Degraded"},
+				{ID: "service-3", Name: "Documentation", Status: "Operational"},
+			},
+			Incidents: []Incident{},
+		},
+	}
+
+	if _, ok := pages[service]; !ok {
+		fmt.Printf("Error: unknown service specified '%s'\n", service)
+		os.Exit(2)
+	}
+	//=======================================
+
+	page := pages[service]
+	var report Report
+	switch format {
+	case "json":
+		//pass
+	case "xml":
+		//pass
+	default:
+		report = Text{
+			Data: &page,
+		}
+	}
+
+	err := report.All()
+	if err != nil {
+		fmt.Println("Error: failed to generate report -", err)
+		os.Exit(3)
 	}
 }

@@ -27,15 +27,17 @@ type Page struct {
 type Service struct {
 	ID            string `json:"id"`
 	Name          string `json:"name"`
-	PageID        string `json:"page_id"`
+	PageID        string `json:"pageId"`
 	Status        string `json:"status"`
-	StatusPageURL string `json:"status_page_url"`
+	StatusPageURL string `json:"statusPageUrl"`
 	Provider      string `json:"provider"`
+	Description   string `json:"description"`
+	Indicator     string `json:"indicator"`
 
-	IsActive bool `json:"is_active"`
+	IsActive bool `json:"isActive"`
 
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
+	CreatedAt time.Time `json:"createdAt"`
+	UpdatedAt time.Time `json:"updatedAt"`
 
 	Components []Component `json:"components"`
 }

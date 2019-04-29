@@ -119,6 +119,11 @@ func TimeDiff(t1, t2 time.Time) Clock {
 		hours--
 	}
 
+	if hours < 0 {
+		hours += 24
+		days--
+	}
+
 	if days < 0 {
 		days += time.Date(y1, M1, 0, 0, 0, 0, 0, time.UTC).Day()
 		months--

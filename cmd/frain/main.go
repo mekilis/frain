@@ -81,16 +81,6 @@ func main() {
 	// At this point there is only ONE service.
 	page.Services = services[name] // TODO: check if deep copy
 
-	incidents, err := frain.Incidents(name)
-	if err != nil {
-		fmt.Printf("Error: failed to get incidents for %s\n", name)
-		os.Exit(2)
-	}
-	page.Incidents = make([]frain.Incident, 0)
-	if _, ok := incidents[name]; ok {
-		page.Incidents = incidents[name]
-	}
-
 	var report frain.Report
 	switch format {
 	case "json":

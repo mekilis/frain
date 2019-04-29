@@ -3,13 +3,8 @@ package frain
 import (
 	"bytes"
 	"encoding/json"
-	"errors"
 	"net/http"
 	"os"
-)
-
-var (
-	pageDoesNotExist = errors.New("specified service name does not exist")
 )
 
 type Data struct {
@@ -47,12 +42,4 @@ func Services() (map[string][]Service, error) {
 	}
 
 	return queryMap, nil
-}
-
-func Incidents(name string) (map[string][]Incident, error) {
-	return make(map[string][]Incident), nil
-}
-
-func IncidentUpdates(name string, i Incident) (map[string][]IncidentUpdate, error) {
-	return make(map[string][]IncidentUpdate), nil
 }

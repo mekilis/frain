@@ -35,10 +35,11 @@ func (t Text) All() error {
 
 	// range through all services
 	for _, service := range t.Data.Services {
+		fmt.Printf("----------------------------------\n")
 
 		name := strings.Title(service.Name)
 		titleService := fmt.Sprintf("%s Services", name)
-		colComponents := "\nName\tStatus\n-----\t-------"
+		colComponents := "\nService Name\tStatus\n-------------\t-------"
 
 		w.Init(os.Stdout, 0, 8, 2, '\t', tabwriter.AlignRight)
 		fmt.Println(titleService)
@@ -52,7 +53,7 @@ func (t Text) All() error {
 		n := len(service.Incidents)
 
 		w.Init(os.Stdout, 0, 8, 2, '\t', tabwriter.AlignRight)
-		fmt.Println("\nIncident History")
+		fmt.Println("\nIncident History\n-----------------")
 
 		if n > 0 {
 			fmt.Fprintln(w, colIncidents)
@@ -75,11 +76,11 @@ func (t Text) All() error {
 				)
 			}
 		} else {
-			fmt.Println("No incidents reports")
+			fmt.Println("No incident reports")
 		}
 		w.Flush()
 
-		fmt.Printf("----------------------------------\n\n") // for next service
+		fmt.Println() // for next service
 	}
 
 	return nil

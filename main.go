@@ -61,30 +61,32 @@ func main() {
 		os.Exit(1)
 	}
 
-	//====================== STUB ===========
-	service := os.Args[1]
+	var page Page
+	name := os.Args[1]
+	page.Name = name
 
-	// assuming data has been fetched from database or api
-	pages := map[string]Page{
-		"github": {
-			Name: "github",
-			Services: []Service{
-				{ID: "service-0", Name: "Website", Status: "Scheduled Maintenance"},
-				{ID: "service-1", Name: "Github Operations", Status: "Operational"},
-				{ID: "service-2", Name: "API Services", Status: "Degraded"},
-				{ID: "service-3", Name: "Documentation", Status: "Operational"},
-			},
-			Incidents: []Incident{},
-		},
-	}
-
-	if _, ok := pages[service]; !ok {
-		fmt.Printf("Error: unknown service specified '%s'\n", service)
+	services, err := Services()
+	if err != nil {
+		fmt.Println("Error: failed to get page names")
 		os.Exit(2)
 	}
-	//=======================================
 
-	page := pages[service]
+	if _, ok := services[name]; !ok {
+		fmt.Printf("Error: unknown service specified '%s'\n", name)
+		os.Exit(2)
+	}
+	page.Services = services[name] // TODO: check if deep copy
+
+	incidents, err := Incidents(name)
+	if err != nil {
+		fmt.Printf("Error: failed to get incidents for %s\n", name)
+		os.Exit(2)
+	}
+	page.Incidents = make([]Incident, 0)
+	if _, ok := incidents[name]; ok {
+		page.Incidents = incidents[name]
+	}
+
 	var report Report
 	switch format {
 	case "json":
@@ -97,7 +99,7 @@ func main() {
 		}
 	}
 
-	err := report.All()
+	err = report.All()
 	if err != nil {
 		fmt.Println("Error: failed to generate report -", err)
 		os.Exit(3)

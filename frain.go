@@ -17,8 +17,10 @@ const (
 // Page specifies the developer tool to check. The Name field here is essentially akin
 // to Name field already defined in Service, Component, Incident and IncidentUpdate.
 type Page struct {
-	Name           string           `json:"name"`
-	Services       []Service        `json:"services"`
+	Name     string    `json:"name"`
+	Services []Service `json:"services"`
+
+	// TODO: Remove these models soon because they are already embedded in Services
 	Incidents      []Incident       `json:"incidents"`
 	IncidentUpdate []IncidentUpdate `json:"incident_update"`
 }
@@ -40,6 +42,7 @@ type Service struct {
 	UpdatedAt time.Time `json:"updatedAt"`
 
 	Components []Component `json:"components"`
+	Incidents  []Incident  `json:"incidents"`
 }
 
 // Component contains information about a service's components

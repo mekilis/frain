@@ -77,6 +77,8 @@ func main() {
 		fmt.Printf("Error: unknown service specified '%s'\n", name)
 		os.Exit(2)
 	}
+
+	// At this point there is only ONE service.
 	page.Services = services[name] // TODO: check if deep copy
 
 	incidents, err := frain.Incidents(name)

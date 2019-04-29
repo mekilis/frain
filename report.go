@@ -49,14 +49,14 @@ func (t Text) All() error {
 		w.Flush()
 
 		colIncidents := "\nDate\tTime\tStatus\tDescription\tUpdated\n"
-		n := len(t.Data.Incidents)
+		n := len(service.Incidents)
 
 		w.Init(os.Stdout, 0, 8, 2, '\t', tabwriter.AlignRight)
 		fmt.Println("\nIncident History")
 
 		if n > 0 {
 			fmt.Fprintln(w, colIncidents)
-			for _, i := range t.Data.Incidents {
+			for _, i := range service.Incidents {
 				fmt.Fprintln(
 					w,
 					fmt.Sprintf("%s %d %d\t%d:%d:%d\t%s\t%s\t%s",

@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"os"
 	"strings"
+
+	"github.com/mekilis/frain"
 )
 
 var (
@@ -37,12 +39,12 @@ func main() {
 	flag.Parse()
 
 	if *versionFlag {
-		Init()
+		frain.Init()
 		os.Exit(0)
 	}
 
 	if *helpFlag {
-		Init()
+		frain.Init()
 		flag.Usage()
 		os.Exit(0)
 	}
@@ -61,11 +63,11 @@ func main() {
 		os.Exit(1)
 	}
 
-	var page Page
+	var page frain.Page
 	name := os.Args[1]
 	page.Name = name
 
-	services, err := Services()
+	services, err := frain.Services()
 	if err != nil {
 		fmt.Println("Error: failed to get page names")
 		os.Exit(2)
@@ -77,24 +79,24 @@ func main() {
 	}
 	page.Services = services[name] // TODO: check if deep copy
 
-	incidents, err := Incidents(name)
+	incidents, err := frain.Incidents(name)
 	if err != nil {
 		fmt.Printf("Error: failed to get incidents for %s\n", name)
 		os.Exit(2)
 	}
-	page.Incidents = make([]Incident, 0)
+	page.Incidents = make([]frain.Incident, 0)
 	if _, ok := incidents[name]; ok {
 		page.Incidents = incidents[name]
 	}
 
-	var report Report
+	var report frain.Report
 	switch format {
 	case "json":
 		//pass
 	case "xml":
 		//pass
 	default:
-		report = Text{
+		report = frain.Text{
 			Data: &page,
 		}
 	}

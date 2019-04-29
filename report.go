@@ -33,48 +33,54 @@ func (t Text) Service(s *Service) error {
 func (t Text) All() error {
 	w := new(tabwriter.Writer)
 
-	name := strings.Title(t.Data.Name)
-	titleServices := fmt.Sprintf("%s Services", name)
-	colServices := "\nName\tStatus\n-----\t-------"
+	// range through all services
+	for _, service := range t.Data.Services {
 
-	w.Init(os.Stdout, 0, 8, 2, '\t', tabwriter.AlignRight)
-	fmt.Println(titleServices)
-	fmt.Fprintln(w, colServices)
-	for _, s := range t.Data.Services {
-		fmt.Fprintln(w, fmt.Sprintf("%s\t%s", s.Name, s.Status))
-	}
-	w.Flush()
+		name := strings.Title(service.Name)
+		titleService := fmt.Sprintf("%s Services", name)
+		colComponents := "\nName\tStatus\n-----\t-------"
 
-	colIncidents := "\nDate\tTime\tStatus\tDescription\tUpdated\n"
-	n := len(t.Data.Incidents)
-
-	w.Init(os.Stdout, 0, 8, 2, '\t', tabwriter.AlignRight)
-	fmt.Println("\nIncident History")
-
-	if n > 0 {
-		fmt.Fprintln(w, colIncidents)
-		for _, i := range t.Data.Incidents {
-			fmt.Fprintln(
-				w,
-				fmt.Sprintf("%s %d %d\t%d:%d:%d\t%s\t%s\t%s",
-					i.CreatedAt.Month(),
-					i.CreatedAt.Day(),
-					i.CreatedAt.Year(),
-
-					i.CreatedAt.Hour(),
-					i.CreatedAt.Minute(),
-					i.CreatedAt.Second(),
-
-					i.Status,
-					i.Impact,
-					i.UpdatedAt, //TODO: call TimeAgo() here
-				),
-			)
+		w.Init(os.Stdout, 0, 8, 2, '\t', tabwriter.AlignRight)
+		fmt.Println(titleService)
+		fmt.Fprintln(w, colComponents)
+		for _, comp := range service.Components {
+			fmt.Fprintln(w, fmt.Sprintf("%s\t%s", strings.Title(comp.Name), strings.Title(comp.Status)))
 		}
-	} else {
-		fmt.Println("No incidents reports")
+		w.Flush()
+
+		colIncidents := "\nDate\tTime\tStatus\tDescription\tUpdated\n"
+		n := len(t.Data.Incidents)
+
+		w.Init(os.Stdout, 0, 8, 2, '\t', tabwriter.AlignRight)
+		fmt.Println("\nIncident History")
+
+		if n > 0 {
+			fmt.Fprintln(w, colIncidents)
+			for _, i := range t.Data.Incidents {
+				fmt.Fprintln(
+					w,
+					fmt.Sprintf("%s %d %d\t%d:%d:%d\t%s\t%s\t%s",
+						i.CreatedAt.Month(),
+						i.CreatedAt.Day(),
+						i.CreatedAt.Year(),
+
+						i.CreatedAt.Hour(),
+						i.CreatedAt.Minute(),
+						i.CreatedAt.Second(),
+
+						i.Status,
+						i.Impact,
+						i.UpdatedAt, //TODO: call TimeAgo() here
+					),
+				)
+			}
+		} else {
+			fmt.Println("No incidents reports")
+		}
+		w.Flush()
+
+		fmt.Printf("----------------------------------\n\n") // for next service
 	}
-	w.Flush()
 
 	return nil
 }

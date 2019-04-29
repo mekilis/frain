@@ -21,7 +21,10 @@ type Result struct {
 }
 
 func Services() (map[string][]Service, error) {
-	query := bytes.NewBuffer([]byte(os.Getenv("QUERY_ALL_SERVICES")))
+	query := bytes.NewBuffer([]byte("{ \"query\": \"{getAllServices {id, name, statusPageUrl," +
+		"provider, indicator, isActive, createdAt, updatedAt, components{id, name, status, " +
+		"description}}}\"}"))
+	// TODO: readd 'description' in query
 	host := os.Getenv("FRAIN_HOST")
 	jsn := "application/json"
 

@@ -19,10 +19,6 @@ const (
 type Page struct {
 	Name     string    `json:"name"`
 	Services []Service `json:"services"`
-
-	// TODO: Remove these models soon because they are already embedded in Services
-	Incidents      []Incident       `json:"incidents"`
-	IncidentUpdate []IncidentUpdate `json:"incident_update"`
 }
 
 // Service represents an external service that we intend to check for availability
@@ -49,45 +45,45 @@ type Service struct {
 type Component struct {
 	ID          string `json:"id"`
 	Name        string `json:"name"`
-	ServiceID   string `json:"service_id"`
-	ComponentID string `json:"component_id"`
+	ServiceID   string `json:"serviceId"`
+	ComponentID string `json:"componentId"`
 	Status      string `json:"status"`
 	Description string `json:"description"`
 
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
+	CreatedAt time.Time `json:"createdAt"`
+	UpdatedAt time.Time `json:"updatedAt"`
 }
 
 // Incident gives all neccessary information relating to a single incident
 type Incident struct {
 	ID         string `json:"id"`
 	Name       string `json:"name"`
-	ServiceID  string `json:"service_id"`
-	IncidentID string `json:"incident_id"`
+	ServiceID  string `json:"serviceId"`
+	IncidentID string `json:"incidentId"`
 	Status     string `json:"status"`
 	Impact     string `json:"impact"`
 	Shortlink  string `json:"shortlink"`
 
-	IsActive bool `json:"is_active"`
+	IsActive bool `json:"isActive"`
 
-	ResolvedAt time.Time `json:"resolved_at"`
-	CreatedAt  time.Time `json:"created_at"`
-	UpdatedAt  time.Time `json:"updated_at"`
+	ResolvedAt time.Time `json:"resolvedAt"`
+	CreatedAt  time.Time `json:"createdAt"`
+	UpdatedAt  time.Time `json:"updatedAt"`
 
-	Events []IncidentUpdate `json:"events"`
+	IncidentUpdates []IncidentUpdate `json:"incidentUpdates"`
 }
 
 // IncidentUpdate provides an update to an existing incident
 type IncidentUpdate struct {
 	ID               string `json:"id"`
 	Name             string `json:"name"`
-	IncidentUpdateID string `json:"incident_update_id"`
-	IncidentID       string `json:"incident_id"`
+	IncidentUpdateID string `json:"incidentUpdateId"`
+	IncidentID       string `json:"incidentId"`
 	Status           string `json:"status"`
 	Body             string `json:"body"`
 
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
+	CreatedAt time.Time `json:"createdAt"`
+	UpdatedAt time.Time `json:"updatedAt"`
 }
 
 // Init is a simple method to print various build info

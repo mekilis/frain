@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"log"
 	"os"
 	"strings"
 
@@ -69,7 +70,8 @@ func main() {
 
 	services, err := frain.Services()
 	if err != nil {
-		fmt.Println("Error: failed to get page names")
+		fmt.Println("Error: failed to get service information for", name)
+		log.Println(err)
 		os.Exit(2)
 	}
 

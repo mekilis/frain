@@ -20,8 +20,10 @@ func Services() (map[string][]Service, error) {
 		"provider, indicator, isActive, createdAt, updatedAt, components{id, name, status, " +
 		"description}}}\"}"))
 	// TODO: readd 'description' in query
-	// TODO: fetch 'incidents{}' when it has been defined by @Subomi
 	host := os.Getenv("FRAIN_HOST")
+	if host == "" {
+		host = "https://frain-server.herokuapp.com/graphql"
+	}
 	jsn := "application/json"
 
 	resp, err := http.Post(host, jsn, query)

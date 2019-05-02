@@ -48,6 +48,9 @@ func (t Text) All() error {
 			fmt.Fprintln(w, fmt.Sprintf("%s\t%s", strings.Title(comp.Name), strings.Title(comp.Status)))
 		}
 		w.Flush()
+		if len(service.Components) == 0 {
+			fmt.Println("No service reports")
+		}
 
 		colIncidents := "\nDate\tTime\tStatus\tDescription\tUpdated\n"
 		n := len(service.Incidents)

@@ -18,7 +18,8 @@ type Result struct {
 func Services() (map[string][]Service, error) {
 	query := bytes.NewBuffer([]byte("{ \"query\": \"{getAllServices {id, name, statusPageUrl," +
 		"provider, indicator, isActive, createdAt, updatedAt, components{id, name, status, " +
-		"description}}}\"}"))
+		"description}, incidents{id, name,impact, status, isActive, createdAt, shortlink, updatedAt," +
+		"resolvedAt, incidentUpdates{id, body, status, createdAt, updatedAt}}}}\"}"))
 	// TODO: readd 'description' in query
 	host := os.Getenv("FRAIN_HOST")
 	if host == "" {

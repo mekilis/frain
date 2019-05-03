@@ -18,6 +18,7 @@ const (
 // to Name field already defined in Service, Component, Incident and IncidentUpdate.
 type Page struct {
 	Name     string    `json:"name"`
+	Service  *Service  `json:"service"`
 	Services []Service `json:"services"`
 }
 

@@ -65,23 +65,22 @@ func main() {
 	}
 
 	var page frain.Page
-	name := os.Args[1]
+	name := strings.ToLower(os.Args[1])
 	page.Name = name
 
-	services, err := frain.Services()
+	service, err := frain.GetServiceFor(name)
 	if err != nil {
 		fmt.Println("Error: failed to get service information for", name)
 		log.Println(err)
 		os.Exit(2)
 	}
 
-	if _, ok := services[name]; !ok {
+	if service.Name != name {
 		fmt.Printf("Error: unknown service specified '%s'\n", name)
 		os.Exit(2)
 	}
 
-	// At this point there is only ONE service.
-	page.Services = services[name] // TODO: check if deep copy
+	page.Service = service
 
 	var report frain.Report
 	switch format {

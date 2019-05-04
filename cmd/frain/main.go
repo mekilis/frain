@@ -6,23 +6,30 @@ import (
 	"log"
 	"os"
 	"strings"
+	"time"
 
 	"github.com/mekilis/frain"
 )
 
 var (
+	config  = "Path to configuration file"
 	format  = "Select format to display query"
 	help    = "Displays this help"
+	quiet   = "Displays the service summary"
 	version = "Current version of frain"
 
+	configFlag  = flag.String("config", "", config)
 	formatFlag  = flag.String("format", "txt", format)
 	helpFlag    = flag.Bool("help", false, help)
+	quietFlag   = flag.Bool("quiet", false, quiet)
 	versionFlag = flag.Bool("version", false, version)
 )
 
 func init() {
+	flag.StringVar(configFlag, "c", "", config)
 	flag.StringVar(formatFlag, "f", "txt", format)
 	flag.BoolVar(helpFlag, "h", false, help)
+	flag.BoolVar(quietFlag, "q", false, quiet)
 	flag.BoolVar(versionFlag, "v", false, version)
 
 	flag.Usage = func() {
@@ -50,11 +57,9 @@ func main() {
 		os.Exit(0)
 	}
 
-	argsLen := len(os.Args)
-	if argsLen < 2 {
-		fmt.Println("Error: no service specified.")
-		flag.Usage()
-		os.Exit(1)
+	if len(*configFlag) != 0 {
+		fmt.Println("-c flag set. this feature has not yet been implemented. please check again later.")
+		os.Exit(0)
 	}
 
 	format := strings.ToLower(*formatFlag)
@@ -64,11 +69,47 @@ func main() {
 		os.Exit(1)
 	}
 
+	osArgsLen := len(os.Args)
+	flagArgs := flag.Args()
+	flagArgsLen := len(flagArgs)
+	if osArgsLen < 2 || flagArgsLen == 0 {
+		fmt.Println("Error: no service specified.")
+		flag.Usage()
+		os.Exit(1)
+	}
+
+	startTime, _ := time.Parse("2006-01-02", "1970-01-01") // iso layout
+	endTime := time.Now()
+
+	var err error
+	if flagArgsLen > 1 {
+		if flagArgs[1] != "incidents" {
+			fmt.Printf("unknown query specified for %s: '%s'\n", flagArgs[0], flagArgs[1])
+			os.Exit(2)
+		}
+		if flagArgsLen > 2 {
+			startTime, err = time.Parse("2006-01-02", flagArgs[2])
+			if err != nil {
+				fmt.Println("bad format specified for start time:", flagArgs[2])
+				os.Exit(4)
+			}
+		}
+		if flagArgsLen > 3 {
+			endTime, err = time.Parse("2006-01-02", flagArgs[3])
+			if err != nil {
+				fmt.Println("bad format specified for end time:", flagArgs[2])
+				os.Exit(4)
+			}
+		}
+
+		// other subcommands
+	}
+
 	var page frain.Page
-	name := strings.ToLower(os.Args[1])
+	name := strings.ToLower(flagArgs[0])
 	page.Name = name
 
-	service, err := frain.GetServiceFor(name)
+	service, err := frain.GetServiceFor(name, startTime, endTime)
 	if err != nil {
 		fmt.Println("Error: failed to get service information for", name)
 		log.Println(err)
@@ -83,20 +124,26 @@ func main() {
 	page.Service = service
 
 	var report frain.Report
+	errFmt := "report feature has not been implemented yet, please check back later in a future release."
 	switch format {
 	case "json":
-		//pass
+		fmt.Println("json", errFmt)
+		os.Exit(0)
 	case "xml":
-		//pass
-	default:
+		fmt.Println("xml", errFmt)
+		os.Exit(0)
+	case "txt":
 		report = frain.Text{
 			Data: &page,
 		}
+	default:
+		fmt.Println("bad file format specified:", format)
+		os.Exit(1)
 	}
 
-	err = report.All()
-	if err != nil {
-		fmt.Println("Error: failed to generate report -", err)
-		os.Exit(3)
+	if flagArgsLen < 2 {
+		report.All(*quietFlag)
+	} else {
+		report.Incidents(*quietFlag)
 	}
 }

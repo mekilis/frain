@@ -9,22 +9,27 @@ import (
 	"time"
 )
 
+// Data is a model to match the `getAllServices` JSON tag from frain backend
 type Data struct {
 	All []Service `json:"getAllServices"`
 }
 
+// Result is a model to match the `data` JSON tag from frain backend
 type Result struct {
 	Data `json:"data"`
 }
 
+// SingleData is a model to match the `getService` JSON tag from frain backend for a single service
 type SingleData struct {
 	Service Service `json:"getService"`
 }
 
+// SingleResult is a model to match the `data` JSON tag from frain backend for a single service
 type SingleResult struct {
 	SingleData `json:"data"`
 }
 
+// Services return all service information whether or not it is defined in the config file
 func Services() (map[string][]Service, error) {
 	query := bytes.NewBuffer([]byte("{ \"query\": \"{getAllServices {id, name, statusPageUrl," +
 		"provider, indicator, isActive, createdAt, updatedAt, components{id, name, status, " +
@@ -57,7 +62,9 @@ func Services() (map[string][]Service, error) {
 	return queryMap, nil
 }
 
-func GetServiceFor(name string, startTime, endTime time.Time) (*Service, error) {
+// GetService sends a POST request to the host server and then returns all information
+// relating to a developer tool to check
+func GetService(name string, startTime, endTime time.Time) (*Service, error) {
 	query := bytes.NewBuffer([]byte("{ \"query\": \"{getService(name:" + name + ")" +
 		"{id, name, statusPageUrl, provider, indicator, isActive, createdAt, updatedAt, components{id, name, status, description}," +
 		"incidents(startTime:\\\"" + parseDate(&startTime) + "\\\", endTime:\\\"" +

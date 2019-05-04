@@ -119,7 +119,7 @@ func main() {
 	name := strings.ToLower(flagArgs[0])
 	page.Name = name
 
-	service, err := frain.GetServiceFor(name, startTime, endTime)
+	service, err := frain.GetService(name, startTime, endTime)
 	if err != nil {
 		fmt.Println("Error: failed to get service information for", name)
 		log.Println(err)

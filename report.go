@@ -5,6 +5,7 @@ import (
 	"os"
 	"strings"
 	"text/tabwriter"
+	"time"
 )
 
 // Report is an interface implemented by types that generates report in different formats.
@@ -50,7 +51,8 @@ func (t Text) All() error {
 		fmt.Println("No service reports")
 	}
 
-	colIncidents := "\nDate\tTime\tStatus\tDescription\tUpdated\n"
+	colIncidents := "Date\tTime\tStatus\tDescription\tUpdated\n----------" +
+		"\t---------\t----------\t-------------\t------------"
 	n := len(service.Incidents)
 
 	w.Init(os.Stdout, 0, 8, 2, '\t', tabwriter.AlignRight)
@@ -59,6 +61,17 @@ func (t Text) All() error {
 	if n > 0 {
 		fmt.Fprintln(w, colIncidents)
 		for _, i := range service.Incidents {
+			// update using the last incidentUpdate ?? uncertain
+			if n := len(i.IncidentUpdates); n > 0 {
+				i.Status = i.IncidentUpdates[0].Status
+				i.UpdatedAt = i.IncidentUpdates[0].UpdatedAt
+			}
+
+			elapsed, _ := TimeAgo(i.UpdatedAt, time.Now())
+			if elapsed == "0 seconds ago" {
+				elapsed = "     -"
+			}
+
 			fmt.Fprintln(
 				w,
 				fmt.Sprintf("%s %d %d\t%d:%d:%d\t%s\t%s\t%s",
@@ -72,7 +85,7 @@ func (t Text) All() error {
 
 					i.Status,
 					i.Impact,
-					i.UpdatedAt, //TODO: call TimeAgo() here
+					elapsed, //TODO: call TimeAgo() here
 				),
 			)
 		}

@@ -88,16 +88,26 @@ func main() {
 			os.Exit(2)
 		}
 		if flagArgsLen > 2 {
-			startTime, err = time.Parse("2006-01-02", flagArgs[2])
+			sTime, err := frain.CleanTimeArg(flagArgs[2])
 			if err != nil {
-				fmt.Println("bad format specified for start time:", flagArgs[2])
+				fmt.Println("start time error.", err)
+				os.Exit(4)
+			}
+			startTime, err = time.Parse("2006-01-02", sTime)
+			if err != nil {
+				fmt.Println("bad format specified for start time:", sTime)
 				os.Exit(4)
 			}
 		}
 		if flagArgsLen > 3 {
-			endTime, err = time.Parse("2006-01-02", flagArgs[3])
+			eTime, err := frain.CleanTimeArg(flagArgs[3])
 			if err != nil {
-				fmt.Println("bad format specified for end time:", flagArgs[2])
+				fmt.Println("end time error.", err)
+				os.Exit(4)
+			}
+			endTime, err = time.Parse("2006-01-02", eTime)
+			if err != nil {
+				fmt.Println("bad format specified for end time:", eTime)
 				os.Exit(4)
 			}
 		}

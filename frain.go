@@ -3,6 +3,8 @@ package frain
 import (
 	"errors"
 	"fmt"
+	"strconv"
+	"strings"
 	"time"
 )
 
@@ -92,22 +94,28 @@ func Init() {
 	fmt.Println(fmt.Sprintf("Frainserver v%s", VersionNumber))
 }
 
-// GetPage returns all information relating to a particular service
-func GetPage(pageName string) (*Page, error) {
-	return nil, errors.New("this function has not yet been implemented")
-}
+// CleanTimeArg takes in a time construct in string format and ensures it is accurate else
+// it returns an error
+func CleanTimeArg(t string) (string, error) {
+	dMy := strings.Split(t, "-")
+	if len(dMy) != 3 {
+		return "", errors.New("time must have the format: YYYY-MM-DD")
+	}
 
-// GetComponent gets the information relating to a given service component
-func GetComponent(compID string) (*Component, error) {
-	return nil, errors.New("this function has not yet been implemented")
-}
+	y, err := strconv.Atoi(dMy[0])
+	if err != nil {
+		return "", errors.New(fmt.Sprint("failed to parse year arg in ", t))
+	}
 
-// GetService gets the information relating to a given service
-func GetService(serviceID string) (*Service, error) {
-	return nil, errors.New("this function has not yet been implemented")
-}
+	M, err := strconv.Atoi(dMy[1])
+	if err != nil {
+		return "", errors.New(fmt.Sprint("failed to parse month arg in ", t))
+	}
 
-// GetIncident gets incident information as well as associated events
-func GetIncident(incidentID string) (*Incident, error) {
-	return nil, errors.New("this function has not yet been implemented")
+	d, err := strconv.Atoi(dMy[2])
+	if err != nil {
+		return "", errors.New(fmt.Sprint("failed to parse day arg in ", t))
+	}
+
+	return fmt.Sprintf("%04d-%02d-%02d", y, M, d), nil
 }

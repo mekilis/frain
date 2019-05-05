@@ -53,6 +53,7 @@ func (t Text) All(quiet bool) {
 	fmt.Printf("----------------------------------\n")
 	fmt.Println(titleService)
 	printComponents(w, service.Components)
+	fmt.Println()
 	printIncidents(w, service.Incidents)
 }
 

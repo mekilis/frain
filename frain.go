@@ -92,22 +92,22 @@ func Init() {
 // CleanTimeArg takes in a time construct in string format and ensures it is accurate else
 // it returns an error
 func CleanTimeArg(t string) (string, error) {
-	dMy := strings.Split(t, "-")
-	if len(dMy) != 3 {
+	yMd := strings.Split(t, "-")
+	if len(yMd) != 3 {
 		return "", errors.New("time must have the format: YYYY-MM-DD")
 	}
 
-	y, err := strconv.Atoi(dMy[0])
+	y, err := strconv.Atoi(yMd[0])
 	if err != nil {
 		return "", errors.New(fmt.Sprint("failed to parse year arg in ", t))
 	}
 
-	M, err := strconv.Atoi(dMy[1])
+	M, err := strconv.Atoi(yMd[1])
 	if err != nil {
 		return "", errors.New(fmt.Sprint("failed to parse month arg in ", t))
 	}
 
-	d, err := strconv.Atoi(dMy[2])
+	d, err := strconv.Atoi(yMd[2])
 	if err != nil {
 		return "", errors.New(fmt.Sprint("failed to parse day arg in ", t))
 	}

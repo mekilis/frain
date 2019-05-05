@@ -3,7 +3,6 @@ package main
 import (
 	"flag"
 	"fmt"
-	"log"
 	"os"
 	"strings"
 	"text/tabwriter"
@@ -140,7 +139,6 @@ func main() {
 	service, err := frain.GetService(name, startTime, endTime)
 	if err != nil {
 		fmt.Println("Error: failed to get service information for", name)
-		log.Println(err)
 		os.Exit(2)
 	}
 

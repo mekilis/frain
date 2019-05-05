@@ -8,13 +8,8 @@ import (
 	"time"
 )
 
-const (
-	VersionNumber = "[undefined]"
-
-	LogPlain   = 0
-	LogDebug   = 1
-	LogVerbose = 2
-)
+// Version represents the current version of this program
+var Version string
 
 // Page specifies the developer tool to check. The Name field here is essentially akin
 // to Name field already defined in Service, Component, Incident and IncidentUpdate.
@@ -91,7 +86,7 @@ type IncidentUpdate struct {
 
 // Init is a simple method to print various build info
 func Init() {
-	fmt.Println(fmt.Sprintf("Frainserver v%s", VersionNumber))
+	fmt.Println(fmt.Sprintf("Frain version %s", Version))
 }
 
 // CleanTimeArg takes in a time construct in string format and ensures it is accurate else

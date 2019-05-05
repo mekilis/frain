@@ -24,6 +24,8 @@ var (
 	helpFlag    = flag.Bool("help", false, help)
 	quietFlag   = flag.Bool("quiet", false, quiet)
 	versionFlag = flag.Bool("version", false, version)
+
+	buildVersion string
 )
 
 func init() {
@@ -60,6 +62,7 @@ func init() {
 
 func main() {
 	flag.Parse()
+	versionInfo()
 
 	if *versionFlag {
 		frain.Init()
@@ -171,4 +174,12 @@ func main() {
 	} else {
 		report.Incidents(*quietFlag)
 	}
+}
+
+func versionInfo() {
+	// go build -ldflags "-X main.buildVersion=X.Y.Z"
+	if buildVersion == "" {
+		buildVersion = "<undefined>"
+	}
+	frain.Version = buildVersion
 }

@@ -33,12 +33,20 @@ func init() {
 	flag.BoolVar(versionFlag, "v", false, version)
 
 	flag.Usage = func() {
-		usage := "Usage:\n\tfrain [options] service\n\nOptions:\n" +
-			"\t-c, --config=CONFIGPATH\tSpecifies path to configuration file\n" +
-			"\t-f, --format=FORMAT\tSpecifies result output format i.e. txt, json or xml (txt by default)\n" +
-			"\t-h, --help\t\tDisplays this message\n" +
-			"\t-q, --quiet\t\tDisplays just the summary\n" +
-			"\t-v, --version\t\tDisplays the current version of program\n"
+		usage := "Usage:\n\tfrain [options] <args>...\n\nA status checker for various developer tools. Options:\n\n" +
+			"\t-c <path>, --config=<path>\t\tSpecifies path to configuration file with a list of services to check\n" +
+			"\t-f <format>, --format=<format>\t\tSpecifies result output format i.e. txt, json or xml (txt by default)\n" +
+			"\t-h, --help\t\t\t\tDisplays this help message\n" +
+			"\t-q <service>, --quiet <service>\t\tDisplays just the summary for specified service\n" +
+			"\t-v, --version\t\t\t\tDisplays the current version of this program\n\nArgs:\n\n" +
+			"\t<service>\n\t<service> incidents\n" +
+			"\t<service> incidents <start time> <end time>\n\n" +
+			"Note that both start and end times have the format YYYY-MM-DD\n\nExamples:\n\n" +
+			"\tfrain github\t\t\t\t\t==> Fetch report for github\n\n" +
+			"\tfrain -q github\t\t\t\t\t==> Summarize fetched result for github\n\n" +
+			"\tfrain github incidents\t\t\t\t==> Fetch only incident reports\n\n" +
+			"\tfrain github incidents 2019-01-12\t\t==> Fetch incidents starting from 2019-01-12\n" +
+			"\tfrain github incidents 2019-01-12 2019-05-05\t==> Fetch incidents starting from 2019-01-12 and ending at 2019-05-05\n"
 		fmt.Print(usage)
 	}
 }

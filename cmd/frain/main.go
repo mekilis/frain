@@ -6,6 +6,7 @@ import (
 	"log"
 	"os"
 	"strings"
+	"text/tabwriter"
 	"time"
 
 	"github.com/mekilis/frain"
@@ -33,21 +34,27 @@ func init() {
 	flag.BoolVar(versionFlag, "v", false, version)
 
 	flag.Usage = func() {
-		usage := "Usage:\n\tfrain [options] <args>...\n\nA status checker for various developer tools. Options:\n\n" +
-			"\t-c <path>, --config=<path>\t\tSpecifies path to configuration file with a list of services to check\n" +
-			"\t-f <format>, --format=<format>\t\tSpecifies result output format i.e. txt, json or xml (txt by default)\n" +
-			"\t-h, --help\t\t\t\tDisplays this help message\n" +
-			"\t-q <service>, --quiet <service>\t\tDisplays just the summary for specified service\n" +
-			"\t-v, --version\t\t\t\tDisplays the current version of this program\n\nArgs:\n\n" +
-			"\t<service>\n\t<service> incidents\n" +
-			"\t<service> incidents <start time> <end time>\n\n" +
-			"Note that both start and end times have the format YYYY-MM-DD\n\nExamples:\n\n" +
-			"\tfrain github\t\t\t\t\t==> Fetch report for github\n\n" +
-			"\tfrain -q github\t\t\t\t\t==> Summarize fetched result for github\n\n" +
-			"\tfrain github incidents\t\t\t\t==> Fetch only incident reports\n\n" +
-			"\tfrain github incidents 2019-01-12\t\t==> Fetch incidents starting from 2019-01-12\n" +
-			"\tfrain github incidents 2019-01-12 2019-05-05\t==> Fetch incidents starting from 2019-01-12 and ending at 2019-05-05\n"
-		fmt.Print(usage)
+		w := new(tabwriter.Writer)
+		w.Init(os.Stdout, 4, 8, 0, '\t', tabwriter.AlignRight)
+		fmt.Fprintln(w, "\nA status checker for various developer tools.")
+		fmt.Fprint(w, "\nUsage:\n\tfrain [options] <args>...\n\n")
+		fmt.Fprintln(w, "\t-c <path>,\t--config=<path>\tSpecifies path to configuration file with a list of services to check")
+		fmt.Fprintln(w, "\t-f <format>,\t--format=<format>\tSpecifies result output format i.e. txt, json or xml (txt by default)")
+		fmt.Fprintln(w, "\t-h,\t--help\tDisplays this help message")
+		fmt.Fprintln(w, "\t-q <service>,\t--quiet <service>\tDisplays just the summary for specified service")
+		fmt.Fprintln(w, "\t-v,\t--version\tDisplays the current version of this program")
+		fmt.Fprintln(w, "\nArgs:")
+		fmt.Fprintln(w, "\t<service>\n\t<service> incidents")
+		fmt.Fprint(w, "\t<service> incidents <start time> <end time>\n\n")
+		fmt.Fprintln(w, "Note that both start and end times have the format YYYY-MM-DD")
+		fmt.Fprintln(w, "\nExamples:")
+		fmt.Fprintln(w, "\tfrain github\t==> Fetch report for github")
+		fmt.Fprintln(w, "\tfrain -q github\t==> Summarize fetched result for github")
+		fmt.Fprintln(w, "\tfrain github incidents\t==> Fetch only incident reports")
+		fmt.Fprintln(w, "\tfrain github incidents 2019-01-12\t==> Fetch incidents from start date")
+		fmt.Fprintln(w, "\tfrain github incidents 2019-01-12 2019-05-05\t==> Fetch incidents from start to end dates")
+
+		w.Flush()
 	}
 }
 

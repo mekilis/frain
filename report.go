@@ -21,6 +21,19 @@ type Text struct {
 
 // Incidents implements the Report interface
 func (t Text) Incidents(quiet bool) {
+	if quiet {
+		n := 0
+		t1 := time.Now()
+		for _, i := range t.Data.Service.Incidents {
+			t2 := i.CreatedAt
+			if t1.Day() == t2.Day() && t1.Month() == t2.Month() && t1.Year() == t2.Year() {
+				n++
+			}
+		}
+		fmt.Printf("%d incident(s) reported today.\n", n)
+		return
+	}
+
 	w := new(tabwriter.Writer)
 	printIncidents(w, t.Data.Service.Incidents)
 }
@@ -83,7 +96,7 @@ func printIncidents(w *tabwriter.Writer, inc []Incident) {
 		"\t---------\t----------\t-------------\t------------"
 
 	w.Init(os.Stdout, 0, 8, 2, '\t', tabwriter.AlignRight)
-	fmt.Println("\nIncident History\n-----------------")
+	fmt.Println("Incident History\n-----------------")
 
 	fmt.Fprintln(w, colIncidents)
 

@@ -5,7 +5,7 @@ CLI for checking the availability of various developer tools.
 `go get github.com/mekilis/frain/cmd/...`
 
 ## Usage
-```bash
+```text
 Usage:
         frain [options] <args>...
 

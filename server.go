@@ -30,11 +30,12 @@ type SingleResult struct {
 }
 
 // Services return all service information whether or not it is defined in the config file
-func Services() (map[string][]Service, error) {
-	query := bytes.NewBuffer([]byte("{ \"query\": \"{getAllServices {id, name, statusPageUrl," +
-		"provider, indicator, isActive, createdAt, updatedAt, components{id, name, status, " +
-		"description}, incidents{id, name,impact, status, isActive, createdAt, shortlink, updatedAt," +
-		"resolvedAt, incidentUpdates{id, body, status, createdAt, updatedAt}}}}\"}"))
+func Services(startTime, endTime time.Time) (map[string][]Service, error) {
+	query := bytes.NewBuffer([]byte("{ \"query\": \"{ getAllServices" +
+		"{id, name, statusPageUrl, provider, indicator, isActive, createdAt, updatedAt, components{id, name, status, description}," +
+		"incidents(startTime:\\\"" + parseDate(&startTime) + "\\\", endTime:\\\"" +
+		parseDate(&endTime) + "\\\"){id, name,impact, status, isActive, createdAt, shortlink, updatedAt," +
+		"incidentUpdates{id, body, status, createdAt, updatedAt}}}}\"}"))
 	// TODO: readd 'description' in query
 	host := os.Getenv("FRAIN_HOST")
 	if host == "" {

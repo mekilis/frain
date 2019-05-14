@@ -5,12 +5,13 @@ CLI for checking the availability of various developer tools.
 `go get github.com/mekilis/frain/cmd/...`
 
 ## Usage
-```text
-Usage:
+```Usage:
         frain [options] <args>...
 
-        -c <path>,      --config=<path>         Specifies path to configuration file with a list of services to check
-        -f <format>,    --format=<format>       Specifies result output format i.e. txt, json or xml (txt by default)
+        -c <path>,      --config=<path>         Specifies path to configuration file with a
+                                                list of services to check
+        -f <format>,    --format=<format>       Specifies result output format i.e. txt, json
+                                                or xml (txt by default)
         -h,             --help                  Displays this help message
         -q <service>,   --quiet <service>       Displays just the summary for specified service
         -v,             --version               Displays the current version of this program
@@ -27,5 +28,5 @@ Examples:
         frain -q github                                 ==> Summarize fetched result for github
         frain github incidents                          ==> Fetch only incident reports
         frain github incidents 2019-01-12               ==> Fetch incidents from start date
-        frain github incidents 2019-01-12 2019-05-05    ==> Fetch incidents from start to end date
+        frain github incidents 2019-01-12 2019-05-05    ==> Fetch incidents from start to end dates
 ```

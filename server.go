@@ -29,40 +29,6 @@ type SingleResult struct {
 	SingleData `json:"data"`
 }
 
-// Services return all service information whether or not it is defined in the config file
-func Services(startTime, endTime time.Time) (map[string][]Service, error) {
-	query := bytes.NewBuffer([]byte("{ \"query\": \"{ getAllServices" +
-		"{id, name, statusPageUrl, provider, indicator, isActive, createdAt, updatedAt, components{id, name, status, description}," +
-		"incidents(startTime:\\\"" + parseDate(&startTime) + "\\\", endTime:\\\"" +
-		parseDate(&endTime) + "\\\"){id, name,impact, status, isActive, createdAt, shortlink, updatedAt," +
-		"incidentUpdates{id, body, status, createdAt, updatedAt}}}}\"}"))
-	// TODO: readd 'description' in query
-	host := os.Getenv("FRAIN_HOST")
-	if host == "" {
-		host = "https://frain-server.herokuapp.com/graphql"
-	}
-	jsn := "application/json"
-
-	resp, err := http.Post(host, jsn, query)
-	if err != nil {
-		return nil, err
-	}
-	defer resp.Body.Close()
-
-	var result Result
-	err = json.NewDecoder(resp.Body).Decode(&result)
-	if err != nil {
-		return nil, err
-	}
-
-	queryMap := make(map[string][]Service)
-	for _, service := range result.Data.All {
-		queryMap[service.Name] = append(queryMap[service.Name], service)
-	}
-
-	return queryMap, nil
-}
-
 // GetService sends a POST request to the host server and then returns all information
 // relating to a developer tool to check
 func GetService(name string, startTime, endTime time.Time) (*Service, error) {

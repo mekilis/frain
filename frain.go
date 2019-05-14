@@ -14,9 +14,8 @@ var Version string
 // Page specifies the developer tool to check. The Name field here is essentially akin
 // to Name field already defined in Service, Component, Incident and IncidentUpdate.
 type Page struct {
-	Name     string    `json:"name"`
-	Service  *Service  `json:"service"`
-	Services []Service `json:"services"`
+	Name    string   `json:"name"`
+	Service *Service `json:"service"`
 }
 
 // Service represents an external service that we intend to check for availability

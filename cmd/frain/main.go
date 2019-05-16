@@ -134,11 +134,15 @@ func main() {
 		// other subcommands
 	}
 
+	var c = make(chan int)
+	go progress(c)
+
 	var page frain.Page
 	name := strings.ToLower(flagArgs[0])
 	page.Name = name
 
 	service, err := frain.GetService(name, startTime, endTime)
+	c <- 1
 	if err != nil {
 		fmt.Println("Error: failed to get service information for", name)
 		os.Exit(2)
@@ -182,4 +186,22 @@ func versionInfo() {
 		buildVersion = "<undefined>"
 	}
 	frain.Version = buildVersion
+}
+
+func progress(c chan int) {
+	s := "Please wait while fetching data"
+	dots := []string{".  ", ".. ", "..."}
+	for {
+		select {
+		case <-c:
+			return
+		default:
+			for _, d := range dots {
+				fmt.Print(s, d)
+				time.Sleep(time.Second)
+				fmt.Print("\r \r")
+			}
+
+		}
+	}
 }

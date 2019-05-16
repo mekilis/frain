@@ -1,11 +1,43 @@
 # Frain CLI
-CLI for checking the availability of various developer tools. 
+
+Frain makes it possible to check the availability of many developer tools or services in the terminal.
+
+Services currently supported are:
+* GitHub
+* Fastly
+* Twilio
 
 ## Installation
-`go get github.com/mekilis/frain/cmd/...`
+
+### Building from source
+You can get the entire source code via the `go` tool using the following:
+
+`$ go get github.com/mekilis/frain/cmd/...`
+
+Move into project directory via:
+
+`$ cd $GOPATH/src/github.com/mekilis/frain`
+
+Installation could then be done in the `$GOPATH/bin` folder using the command:
+
+`$ make install`
+
+OR
+
+The compiled binary could be moved to another location via:
+
+`$ make build && sudo mv frain /usr/bin` 
+
+on Linux, for example.
+
+**NOTE:** Building from source requires Go (version 1.11 or later). It is assumed that `$GOPATH` is set.
+
+### Precompiled binaries
+You can download precompiled binaries from the [release page](https://github.com/mekilis/frain/releases).
 
 ## Usage
-```Usage:
+```
+Usage:
         frain [options] <args>...
 
         -c <path>,      --config=<path>         Specifies path to configuration file with a
@@ -30,3 +62,4 @@ Examples:
         frain github incidents 2019-01-12               ==> Fetch incidents from start date
         frain github incidents 2019-01-12 2019-05-05    ==> Fetch incidents from start to end dates
 ```
+

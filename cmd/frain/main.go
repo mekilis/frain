@@ -190,10 +190,15 @@ func versionInfo() {
 
 func progress(c chan int) {
 	s := "Please wait while fetching data"
+	cls := "                                        "
 	dots := []string{".  ", ".. ", "..."}
 	for {
 		select {
 		case <-c:
+			// clear
+			fmt.Print("\r \r")
+			fmt.Print(cls)
+			fmt.Print("\r \r")
 			return
 		default:
 			for _, d := range dots {

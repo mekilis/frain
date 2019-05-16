@@ -108,12 +108,6 @@ func printIncidents(w *tabwriter.Writer, inc []Incident) {
 	}
 
 	for _, i := range inc {
-		// update using the last incidentUpdate ?? uncertain
-		if nIU := len(i.IncidentUpdates); nIU > 0 {
-			i.Status = i.IncidentUpdates[0].Status
-			i.UpdatedAt = i.IncidentUpdates[0].UpdatedAt
-		}
-
 		elapsed, _ := TimeAgo(i.UpdatedAt, time.Now())
 		if elapsed == "0 seconds ago" {
 			elapsed = "     -"

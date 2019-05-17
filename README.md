@@ -38,13 +38,16 @@ You can download precompiled binaries from the [release page](https://github.com
 You can download them easily with the following:
 
 ```bash
-sudo curl -L -o /usr/local/bin/frain https://github.com/mekilis/frain/releases/download/v0.1.0/frain-v0.1.0-<os-type>-amd64 && sudo chmod +x /usr/local/bin/frain
+# Darwin (MacOS)
+$ sudo curl -L -o /usr/local/bin/frain https://github.com/mekilis/frain/releases/download/v0.1.0/frain-v0.1.0-darwin-amd64 && sudo chmod +x /usr/local/bin/frain
+
+# Linux
+$ sudo curl -L -o /usr/local/bin/frain https://github.com/mekilis/frain/releases/download/v0.1.0/frain-v0.1.0-linux-amd64 && sudo chmod +x /usr/local/bin/frain
 
 # Windows
-sudo curl -L -o /usr/local/bin/frain https://github.com/mekilis/frain/releases/download/v0.1.0/frain-v0.1.0-windows-amd64.exe && sudo chmod +x /usr/local/bin/frain
+$ curl -L -o frain https://github.com/mekilis/frain/releases/download/v0.1.0/frain-v0.1.0-windows-amd64.exe
 ```
 
-The `os-type` can be either linux or darwin (for Mac)
 
 ## Usage
 ```

@@ -9,14 +9,6 @@ Services currently supported are:
 
 ## Installation
 
-### Downloading Binary
-
-```bash
-sudo curl -L -o /usr/local/bin/frain https://github.com/mekilis/frain/releases/download/v0.1.0/frain-v0.1.0-<os-type>-amd64 && sudo chmod +x /usr/local/bin/frain
-```
-
-The `os-type` can be either linux, darwin (for Mac) and windows.
-
 ### Building from source
 You can get the entire source code via the `go` tool using the following:
 
@@ -42,6 +34,17 @@ on Linux, for example.
 
 ### Precompiled binaries
 You can download precompiled binaries from the [release page](https://github.com/mekilis/frain/releases).
+
+You can download them easily with the following:
+
+```bash
+sudo curl -L -o /usr/local/bin/frain https://github.com/mekilis/frain/releases/download/v0.1.0/frain-v0.1.0-<os-type>-amd64 && sudo chmod +x /usr/local/bin/frain
+
+# Windows
+sudo curl -L -o /usr/local/bin/frain https://github.com/mekilis/frain/releases/download/v0.1.0/frain-v0.1.0-windows-amd64.exe && sudo chmod +x /usr/local/bin/frain
+```
+
+The `os-type` can be either linux or darwin (for Mac)
 
 ## Usage
 ```

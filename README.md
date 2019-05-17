@@ -9,6 +9,14 @@ Services currently supported are:
 
 ## Installation
 
+### Downloading Binary
+
+```bash
+sudo curl -L -o /usr/local/bin/frain https://github.com/mekilis/frain/releases/download/v0.1.0/frain-v0.1.0-<os-type>-amd64 && sudo chmod +x /usr/local/bin/frain
+```
+
+The `os-type` can be either linux, darwin (for Mac) and windows.
+
 ### Building from source
 You can get the entire source code via the `go` tool using the following:
 

@@ -6,6 +6,9 @@ Services currently supported are:
 * GitHub
 * Fastly
 * Twilio
+* Bitbucket
+* CircleCI
+* StatusPage
 
 ## Installation
 

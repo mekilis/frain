@@ -62,6 +62,7 @@ Usage:
         -f <format>,    --format=<format>       Specifies result output format i.e. txt, json
                                                 or xml (txt by default)
         -h,             --help                  Displays this help message
+        -l,             --list                  Lists the currently supported services on frain
         -q <service>,   --quiet <service>       Displays just the summary for specified service
         -v,             --version               Displays the current version of this program
 

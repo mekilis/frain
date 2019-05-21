@@ -43,7 +43,6 @@ func init() {
 	flag.Usage = func() {
 		w := new(tabwriter.Writer)
 		w.Init(os.Stdout, 4, 8, 0, '\t', tabwriter.AlignRight)
-		fmt.Fprintln(w, "\nA status checker for various developer tools.")
 		fmt.Fprint(w, "\nUsage:\n\tfrain [options] <args>...\n\n")
 		fmt.Fprintln(w, "\t-c <path>,\t--config=<path>\tSpecifies path to configuration file with a ")
 		fmt.Fprintln(w, "\t\t\tlist of services to check")

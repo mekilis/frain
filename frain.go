@@ -7,18 +7,19 @@ import (
 	"strings"
 	"time"
 )
+
 var (
 	// Version represents the current version of this program
 	Version string
-	
+
 	// ServiceList stores all supported services on frain
 	ServiceList = []string{
-	"github",
-	"twilio",
-	"fastly",
-	"bitbucket",
-	"circle_ci",
-	"status_page",
+		"github",
+		"twilio",
+		"fastly",
+		"bitbucket",
+		"circle_ci",
+		"status_page",
 	}
 )
 
@@ -97,6 +98,7 @@ type IncidentUpdate struct {
 // Init is a simple method to print various build info
 func Init() {
 	fmt.Println(fmt.Sprintf("Frain version %s", Version))
+	fmt.Println("\nA status checker for various developer tools.")
 }
 
 // CleanTimeArg takes in a time construct in string format and ensures it is accurate else

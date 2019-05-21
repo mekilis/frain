@@ -1,12 +1,15 @@
 package main
 
 import (
+	"bufio"
 	"flag"
 	"fmt"
 	"os"
 	"strings"
 	"text/tabwriter"
 	"time"
+
+	"github.com/sajari/fuzzy"
 
 	"github.com/mekilis/frain"
 )
@@ -15,12 +18,14 @@ var (
 	config  = "Path to configuration file"
 	format  = "Select format to display query"
 	help    = "Displays this help"
+	list    = "Lists the currently supported services"
 	quiet   = "Displays the service summary"
 	version = "Current version of frain"
 
 	configFlag  = flag.String("config", "", config)
 	formatFlag  = flag.String("format", "txt", format)
 	helpFlag    = flag.Bool("help", false, help)
+	listFlag    = flag.Bool("list", false, list)
 	quietFlag   = flag.Bool("quiet", false, quiet)
 	versionFlag = flag.Bool("version", false, version)
 
@@ -31,6 +36,7 @@ func init() {
 	flag.StringVar(configFlag, "c", "", config)
 	flag.StringVar(formatFlag, "f", "txt", format)
 	flag.BoolVar(helpFlag, "h", false, help)
+	flag.BoolVar(listFlag, "l", false, list)
 	flag.BoolVar(quietFlag, "q", false, quiet)
 	flag.BoolVar(versionFlag, "v", false, version)
 
@@ -44,6 +50,7 @@ func init() {
 		fmt.Fprintln(w, "\t-f <format>,\t--format=<format>\tSpecifies result output format i.e. txt, json")
 		fmt.Fprintln(w, "\t\t\tor xml (txt by default)")
 		fmt.Fprintln(w, "\t-h,\t--help\tDisplays this help message")
+		fmt.Fprintln(w, "\t-l,\t--list\tLists the currently supported services on frain")
 		fmt.Fprintln(w, "\t-q <service>,\t--quiet <service>\tDisplays just the summary for specified service")
 		fmt.Fprintln(w, "\t-v,\t--version\tDisplays the current version of this program")
 		fmt.Fprintln(w, "\nArgs:")
@@ -73,6 +80,15 @@ func main() {
 	if *helpFlag {
 		frain.Init()
 		flag.Usage()
+		os.Exit(0)
+	}
+
+	if *listFlag {
+		frain.Init()
+		fmt.Println("\nServices currently supported are:")
+		for _, s := range frain.ServiceList {
+			fmt.Printf("\t%s\n", s)
+		}
 		os.Exit(0)
 	}
 
@@ -134,12 +150,49 @@ func main() {
 		// other subcommands
 	}
 
-	var c = make(chan int)
-	go progress(c)
+	model := fuzzy.NewModel()
+	model.SetThreshold(1)
+	model.SetDepth(5)
+	model.Train(frain.ServiceList)
 
 	var page frain.Page
 	name := strings.ToLower(flagArgs[0])
 	page.Name = name
+
+	check := model.SpellCheck(name)
+	if check != name {
+		fmt.Printf("'%s' is not a recognized service on frain. Try running 'frain --list'.\n", name)
+		suggestions := model.Suggestions(name, false)
+		if size := len(suggestions); size > 0 {
+			stopword := "service is"
+			if size > 1 {
+				stopword = "services are"
+			}
+
+			fmt.Printf("\nThe most similar %s\n", stopword)
+			for _, s := range suggestions {
+				fmt.Printf("\t%s\n", s)
+			}
+		}
+
+		if check != "" {
+			scanner := bufio.NewScanner(os.Stdin)
+			fmt.Printf("\nDid you mean %s? (Press 'y' to confirm): ", check)
+			if scanner.Scan() {
+				yes := strings.ToLower(scanner.Text())
+				if len(yes) > 0 && yes[0] == 'y' {
+					name = check
+				} else {
+					os.Exit(0)
+				}
+			}
+		} else {
+			os.Exit(0)
+		}
+	}
+
+	var c = make(chan int)
+	go progress(c)
 
 	service, err := frain.GetService(name, startTime, endTime)
 	c <- 1
@@ -149,6 +202,7 @@ func main() {
 	}
 
 	if service.Name != name {
+		// sanity check
 		fmt.Printf("Error: unknown service specified '%s'\n", name)
 		os.Exit(2)
 	}

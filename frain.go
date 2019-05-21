@@ -7,9 +7,20 @@ import (
 	"strings"
 	"time"
 )
-
-// Version represents the current version of this program
-var Version string
+var (
+	// Version represents the current version of this program
+	Version string
+	
+	// ServiceList stores all supported services on frain
+	ServiceList = []string{
+	"github",
+	"twilio",
+	"fastly",
+	"bitbucket",
+	"circle_ci",
+	"status_page",
+	}
+)
 
 // Page specifies the developer tool to check. The Name field here is essentially akin
 // to Name field already defined in Service, Component, Incident and IncidentUpdate.

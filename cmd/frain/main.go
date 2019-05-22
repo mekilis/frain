@@ -152,7 +152,12 @@ func main() {
 
 	service, err := frain.GetService(name, startTime, endTime)
 	c <- 1
-	if err != nil || strings.ToLower(service.Name) != name {
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(2)
+	}
+
+	if strings.ToLower(service.Name) != name {
 		fmt.Printf("Error: '%s' is not a recognized service on frain. Try running 'frain --list'.\n", name)
 		os.Exit(2)
 	}

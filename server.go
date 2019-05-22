@@ -3,6 +3,7 @@ package frain
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 	"os"
@@ -30,6 +31,11 @@ type SingleResult struct {
 	SingleData `json:"data"`
 }
 
+var (
+	errHTTPPost   = errors.New("Error: a network error occurred while fetching data")
+	errJSONDecode = errors.New("Error: failed to decode fetched data")
+)
+
 // GetService sends a POST request to the host server and then returns all information
 // relating to a developer tool to check
 func GetService(name string, startTime, endTime time.Time) (*Service, error) {
@@ -47,14 +53,14 @@ func GetService(name string, startTime, endTime time.Time) (*Service, error) {
 
 	resp, err := http.Post(host, jsn, query)
 	if err != nil {
-		return nil, err
+		return nil, errHTTPPost
 	}
 	defer resp.Body.Close()
 
 	var result SingleResult
 	err = json.NewDecoder(resp.Body).Decode(&result)
 	if err != nil {
-		return nil, err
+		return nil, errJSONDecode
 	}
 
 	return &result.Service, nil
@@ -64,6 +70,7 @@ func parseDate(t *time.Time) string {
 	return fmt.Sprintf("%04d-%02d-%02d", t.Year(), int(t.Month()), t.Day())
 }
 
+// GetServiceList returns a list of services currently supported by frain
 func GetServiceList() ([]string, error) {
 	query := bytes.NewBuffer([]byte(`{ "query": "{getAllServices {name}}" }`))
 	host := os.Getenv("FRAIN_HOST")
@@ -74,14 +81,14 @@ func GetServiceList() ([]string, error) {
 
 	resp, err := http.Post(host, jsn, query)
 	if err != nil {
-		return nil, err
+		return nil, errHTTPPost
 	}
 	defer resp.Body.Close()
 
 	var result Result
 	err = json.NewDecoder(resp.Body).Decode(&result)
 	if err != nil {
-		return nil, err
+		return nil, errJSONDecode
 	}
 
 	var services []string

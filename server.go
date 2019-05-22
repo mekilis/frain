@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"strings"
 	"time"
 )
 
@@ -61,4 +62,38 @@ func GetService(name string, startTime, endTime time.Time) (*Service, error) {
 
 func parseDate(t *time.Time) string {
 	return fmt.Sprintf("%04d-%02d-%02d", t.Year(), int(t.Month()), t.Day())
+}
+
+func GetServiceList() ([]string, error) {
+	query := bytes.NewBuffer([]byte(`{ "query": "{getAllServices {name}}" }`))
+	host := os.Getenv("FRAIN_HOST")
+	if host == "" {
+		host = "https://frain-server.herokuapp.com/graphql"
+	}
+	jsn := "application/json"
+
+	resp, err := http.Post(host, jsn, query)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	var result Result
+	err = json.NewDecoder(resp.Body).Decode(&result)
+	if err != nil {
+		return nil, err
+	}
+
+	var services []string
+	var sMap = map[string]bool{}
+
+	for _, s := range result.All {
+		sMap[strings.ToLower(s.Name)] = true
+	}
+
+	for s := range sMap {
+		services = append(services, s)
+	}
+
+	return services, nil
 }

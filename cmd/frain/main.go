@@ -1,15 +1,12 @@
 package main
 
 import (
-	"bufio"
 	"flag"
 	"fmt"
 	"os"
 	"strings"
 	"text/tabwriter"
 	"time"
-
-	"github.com/sajari/fuzzy"
 
 	"github.com/mekilis/frain"
 )
@@ -84,10 +81,7 @@ func main() {
 
 	if *listFlag {
 		frain.Init()
-		fmt.Println("\nServices currently supported are:")
-		for _, s := range frain.ServiceList {
-			fmt.Printf("\t%s\n", s)
-		}
+		listServices()
 		os.Exit(0)
 	}
 
@@ -149,46 +143,9 @@ func main() {
 		// other subcommands
 	}
 
-	model := fuzzy.NewModel()
-	model.SetThreshold(1)
-	model.SetDepth(5)
-	model.Train(frain.ServiceList)
-
 	var page frain.Page
 	name := strings.ToLower(flagArgs[0])
 	page.Name = name
-
-	check := model.SpellCheck(name)
-	if check != name {
-		fmt.Printf("'%s' is not a recognized service on frain. Try running 'frain --list'.\n", name)
-		suggestions := model.Suggestions(name, false)
-		if size := len(suggestions); size > 0 {
-			stopword := "service is"
-			if size > 1 {
-				stopword = "services are"
-			}
-
-			fmt.Printf("\nThe most similar %s\n", stopword)
-			for _, s := range suggestions {
-				fmt.Printf("\t%s\n", s)
-			}
-		}
-
-		if check != "" {
-			scanner := bufio.NewScanner(os.Stdin)
-			fmt.Printf("\nDid you mean %s? (Press 'y' to confirm): ", check)
-			if scanner.Scan() {
-				yes := strings.ToLower(scanner.Text())
-				if len(yes) > 0 && yes[0] == 'y' {
-					name = check
-				} else {
-					os.Exit(0)
-				}
-			}
-		} else {
-			os.Exit(0)
-		}
-	}
 
 	var c = make(chan int)
 	go progress(c)
@@ -196,7 +153,7 @@ func main() {
 	service, err := frain.GetService(name, startTime, endTime)
 	c <- 1
 	if err != nil {
-		fmt.Println("Error: failed to get service information for", name)
+		fmt.Printf("'%s' is not a recognized service on frain. Try running 'frain --list'.\n", name)
 		os.Exit(2)
 	}
 
@@ -261,5 +218,28 @@ func progress(c chan int) {
 			}
 
 		}
+	}
+}
+
+func listServices() {
+	var c = make(chan int)
+	go progress(c)
+
+	sl, err := frain.GetServiceList()
+	c <- 0
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	size := len(sl)
+	if size == 0 {
+		fmt.Println("\nNo service supported at the moment.")
+		return
+	}
+
+	fmt.Println("\nServices currently supported are:")
+	for _, s := range sl {
+		fmt.Printf("\t%s\n", s)
 	}
 }

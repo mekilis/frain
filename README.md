@@ -9,6 +9,9 @@ Services currently supported are:
 * Bitbucket
 * CircleCI
 * StatusPage
+* DataDog
+* MailGun
+* Medium
 
 ## Installation
 

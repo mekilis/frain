@@ -107,7 +107,8 @@ func printIncidents(w *tabwriter.Writer, inc []Incident) {
 		return
 	}
 
-	for _, i := range inc {
+	for j := n - 1; j >= 0; j-- {
+		i := inc[j]
 		elapsed, _ := TimeAgo(i.UpdatedAt, time.Now())
 		if elapsed == "0 seconds ago" {
 			elapsed = "     -"

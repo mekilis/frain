@@ -152,6 +152,7 @@ func main() {
 
 	service, err := frain.GetService(name, startTime, endTime)
 	c <- 1
+	clear()
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(2)
@@ -199,15 +200,10 @@ func versionInfo() {
 
 func progress(c chan int) {
 	s := "Please wait while fetching data"
-	cls := "                                        "
 	dots := []string{".  ", ".. ", "..."}
 	for {
 		select {
 		case <-c:
-			// clear
-			fmt.Print("\r \r")
-			fmt.Print(cls)
-			fmt.Print("\r \r")
 			return
 		default:
 			for _, d := range dots {
@@ -220,12 +216,20 @@ func progress(c chan int) {
 	}
 }
 
+func clear() {
+	cls := "                                        "
+	fmt.Print("\r \r")
+	fmt.Print(cls)
+	fmt.Print("\r \r")
+}
+
 func listServices() {
 	var c = make(chan int)
 	go progress(c)
 
 	sl, err := frain.GetServiceList()
 	c <- 0
+	clear()
 	if err != nil {
 		fmt.Println(err)
 		return

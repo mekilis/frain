@@ -96,12 +96,12 @@ func summarize(title string, components []Component, incidents []Incident) error
 }
 
 func printComponents(w *tabwriter.Writer, comps []Component) {
-	colComponents := "\nCOMPONENT NAME\tSTATUS" //\n-------------\t-------"
+	colComponents := "\nCOMPONENT NAME\tSTATUS"
 	w.Init(os.Stdout, 0, 8, 2, '\t', tabwriter.AlignRight)
 
 	fmt.Fprint(w, bg(fg(colComponents)))
 	for _, c := range comps {
-		words := strings.Split(render(c.Status), "_")
+		words := strings.Split(c.Status, "_")
 		sb := strings.Builder{}
 		for _, word := range words {
 			sb.WriteString(strings.Title(word))
@@ -109,7 +109,7 @@ func printComponents(w *tabwriter.Writer, comps []Component) {
 		}
 		status := strings.TrimSpace(sb.String())
 
-		fmt.Fprint(w, fmt.Sprintf("\n%s\t%s", strings.Title(c.Name), status))
+		fmt.Fprint(w, fmt.Sprintf("\n%s\t%s", strings.Title(c.Name), render(status)))
 	}
 	fmt.Fprintln(w)
 	w.Flush()
@@ -120,11 +120,10 @@ func printComponents(w *tabwriter.Writer, comps []Component) {
 }
 
 func printIncidents(w *tabwriter.Writer, inc []Incident) {
-	colIncidents := "\nDATE\tTIME\tDESCRIPTION\tUPDATED\tSTATUS" //\n----------" +
-	//"\t---------\t----------\t-------------\t------------"
+	colIncidents := "\nDATE\tTIME\tIMPACT\tUPDATED\tSTATUS"
 
 	w.Init(os.Stdout, 0, 8, 2, '\t', tabwriter.AlignRight)
-	color.Bold.Println("Incident History") // \n-----------------"))
+	color.Bold.Println("Incident History")
 
 	n := len(inc)
 	if n == 0 {
@@ -152,9 +151,9 @@ func printIncidents(w *tabwriter.Writer, inc []Incident) {
 				i.CreatedAt.Minute(),
 				i.CreatedAt.Second(),
 
-				i.Impact,
+				strings.Title(i.Impact),
 				elapsed,
-				render(i.Status),
+				render(strings.Title(i.Status)),
 			),
 		)
 	}
@@ -164,11 +163,11 @@ func printIncidents(w *tabwriter.Writer, inc []Incident) {
 
 func render(status string) string {
 	var r = color.FgWhite.Render // default
-
-	switch status {
+	s := strings.Split(strings.ToLower(status), " ")
+	switch s[0] {
 	case "operational", "resolved":
 		r = color.FgGreen.Render
-	case "degraded", "under_maintenance", "investigating":
+	case "degraded", "under", "under_maintenance", "investigating":
 		r = color.FgYellow.Render
 	case "outage", "critical":
 		r = color.FgRed.Render

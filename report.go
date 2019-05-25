@@ -43,7 +43,17 @@ func (t Text) All(quiet bool) {
 	w := new(tabwriter.Writer)
 	service := t.Data.Service
 
-	name := strings.Title(service.Name)
+	sb := strings.Builder{}
+	words := strings.Split(service.Name, "_")
+	if len(words) > 0 {
+		words[0] = strings.Title(words[0])
+	}
+	for _, w := range words {
+		sb.Write([]byte(w))
+		sb.Write([]byte(" "))
+	}
+	name := strings.TrimSpace(sb.String())
+
 	titleService := fmt.Sprintf("%s Services", name)
 	if quiet {
 		summarize(titleService, service.Components, service.Incidents)

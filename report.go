@@ -6,6 +6,8 @@ import (
 	"strings"
 	"text/tabwriter"
 	"time"
+
+	color "gopkg.in/gookit/color.v1"
 )
 
 // Report is an interface implemented by types that generates report in different formats.
@@ -18,6 +20,13 @@ type Report interface {
 type Text struct {
 	Data *Page
 }
+
+var (
+	yellow = color.FgLightYellow.Render
+
+	bg = color.BgGreen.Render
+	fg = color.FgBlack.Render
+)
 
 // Incidents implements the Report interface
 func (t Text) Incidents(quiet bool) {
@@ -60,8 +69,7 @@ func (t Text) All(quiet bool) {
 		return
 	}
 
-	fmt.Printf("----------------------------------\n")
-	fmt.Println(titleService)
+	color.Bold.Println(titleService)
 	printComponents(w, service.Components)
 	fmt.Println()
 	printIncidents(w, service.Incidents)
@@ -88,13 +96,22 @@ func summarize(title string, components []Component, incidents []Incident) error
 }
 
 func printComponents(w *tabwriter.Writer, comps []Component) {
-	colComponents := "\nComponent Name\tStatus\n-------------\t-------"
+	colComponents := "\nCOMPONENT NAME\tSTATUS" //\n-------------\t-------"
 	w.Init(os.Stdout, 0, 8, 2, '\t', tabwriter.AlignRight)
 
-	fmt.Fprintln(w, colComponents)
+	fmt.Fprint(w, bg(fg(colComponents)))
 	for _, c := range comps {
-		fmt.Fprintln(w, fmt.Sprintf("%s\t%s", strings.Title(c.Name), strings.Title(c.Status)))
+		words := strings.Split(render(c.Status), "_")
+		sb := strings.Builder{}
+		for _, word := range words {
+			sb.WriteString(strings.Title(word))
+			sb.WriteString(" ")
+		}
+		status := strings.TrimSpace(sb.String())
+
+		fmt.Fprint(w, fmt.Sprintf("\n%s\t%s", strings.Title(c.Name), status))
 	}
+	fmt.Fprintln(w)
 	w.Flush()
 
 	if len(comps) == 0 {
@@ -103,19 +120,19 @@ func printComponents(w *tabwriter.Writer, comps []Component) {
 }
 
 func printIncidents(w *tabwriter.Writer, inc []Incident) {
-	colIncidents := "Date\tTime\tStatus\tDescription\tUpdated\n----------" +
-		"\t---------\t----------\t-------------\t------------"
+	colIncidents := "\nDATE\tTIME\tDESCRIPTION\tUPDATED\tSTATUS" //\n----------" +
+	//"\t---------\t----------\t-------------\t------------"
 
 	w.Init(os.Stdout, 0, 8, 2, '\t', tabwriter.AlignRight)
-	fmt.Println("Incident History\n-----------------")
-
-	fmt.Fprintln(w, colIncidents)
+	color.Bold.Println("Incident History") // \n-----------------"))
 
 	n := len(inc)
 	if n == 0 {
 		fmt.Println("No incident reports")
 		return
 	}
+
+	fmt.Fprint(w, bg(fg(colIncidents)))
 
 	for j := n - 1; j >= 0; j-- {
 		i := inc[j]
@@ -124,9 +141,9 @@ func printIncidents(w *tabwriter.Writer, inc []Incident) {
 			elapsed = "     -"
 		}
 
-		fmt.Fprintln(
+		fmt.Fprint(
 			w,
-			fmt.Sprintf("%s %d %d\t%d:%d:%d\t%s\t%s\t%s",
+			fmt.Sprintf("\n%s %d %d\t%d:%d:%d\t%s\t%s\t%s",
 				i.CreatedAt.Month(),
 				i.CreatedAt.Day(),
 				i.CreatedAt.Year(),
@@ -135,11 +152,27 @@ func printIncidents(w *tabwriter.Writer, inc []Incident) {
 				i.CreatedAt.Minute(),
 				i.CreatedAt.Second(),
 
-				i.Status,
 				i.Impact,
 				elapsed,
+				render(i.Status),
 			),
 		)
 	}
+	fmt.Fprintln(w)
 	w.Flush()
+}
+
+func render(status string) string {
+	var r = color.FgWhite.Render // default
+
+	switch status {
+	case "operational", "resolved":
+		r = color.FgGreen.Render
+	case "degraded", "under_maintenance", "investigating":
+		r = color.FgYellow.Render
+	case "outage", "critical":
+		r = color.FgRed.Render
+	}
+
+	return r(status)
 }

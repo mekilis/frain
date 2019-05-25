@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/mekilis/frain"
+	color "gopkg.in/gookit/color.v1"
 )
 
 var (
@@ -30,6 +31,10 @@ var (
 )
 
 func init() {
+	blue := color.FgLightBlue.Render
+	green := color.FgGreen.Render
+	yellow := color.FgYellow.Render
+
 	flag.StringVar(configFlag, "c", "", config)
 	flag.StringVar(formatFlag, "f", "txt", format)
 	flag.BoolVar(helpFlag, "h", false, help)
@@ -39,26 +44,26 @@ func init() {
 
 	flag.Usage = func() {
 		w := new(tabwriter.Writer)
-		w.Init(os.Stdout, 4, 8, 0, '\t', tabwriter.AlignRight)
-		fmt.Fprint(w, "\nUsage:\n\tfrain [options] <args>...\n\n")
-		fmt.Fprintln(w, "\t-c <path>,\t--config=<path>\tSpecifies path to configuration file with a ")
-		fmt.Fprintln(w, "\t\t\tlist of services to check")
-		fmt.Fprintln(w, "\t-f <format>,\t--format=<format>\tSpecifies result output format i.e. txt, json")
-		fmt.Fprintln(w, "\t\t\tor xml (txt by default)")
-		fmt.Fprintln(w, "\t-h,\t--help\tDisplays this help message")
-		fmt.Fprintln(w, "\t-l,\t--list\tLists the currently supported services on frain")
-		fmt.Fprintln(w, "\t-q <service>,\t--quiet <service>\tDisplays just the summary for specified service")
-		fmt.Fprintln(w, "\t-v,\t--version\tDisplays the current version of this program")
-		fmt.Fprintln(w, "\nArgs:")
-		fmt.Fprintln(w, "\t<service>\n\t<service> incidents")
-		fmt.Fprint(w, "\t<service> incidents <start time> <end time>\n\n")
-		fmt.Fprintln(w, "Note that both start and end times have the format YYYY-MM-DD")
-		fmt.Fprintln(w, "\nExamples:")
-		fmt.Fprintln(w, "\tfrain github\t==> Fetch report for github")
-		fmt.Fprintln(w, "\tfrain -q github\t==> Summarize fetched result for github")
-		fmt.Fprintln(w, "\tfrain github incidents\t==> Fetch only incident reports")
-		fmt.Fprintln(w, "\tfrain github incidents 2019-01-12\t==> Fetch incidents from start date")
-		fmt.Fprintln(w, "\tfrain github incidents 2019-01-12 2019-05-05\t==> Fetch incidents from start to end dates")
+		w.Init(os.Stdout, 2, 8, 0, '\t', tabwriter.AlignRight)
+		fmt.Fprint(w, yellow("\nUsage:"),
+			"\n\tfrain ", green("[options]"), " <args>...\n",
+			yellow("\nOptions:"),
+			green("\n\t-c <path>,\t--config=<path>\t"), "Specifies path to configuration file with a\n\t\t\tlist of services to check",
+			green("\n\t-f <format>,\t--format=<format>\t"), "Specifies result output format i.e. txt, json\n\t\t\tor xml (txt by default)",
+			green("\n\t-h,\t--help\t"), "Displays this help message",
+			green("\n\t-l,\t--list\t"), "Lists the currently supported services on frain",
+			green("\n\t-q <service>,\t--quiet <service>\t"), "Displays just the summary for specified service",
+			green("\n\t-v,\t--version\t"), "Displays the current version of this program\n",
+			yellow("\nArgs:"),
+			"\t<service>\n\t<service> ", green("incidents"),
+			"\n\t<service> ", green("incidents <start time> <end time>\n\n"),
+			"Note that both start and end times have the format YYYY-MM-DD\n",
+			yellow("\nExamples:"),
+			blue("\n\tfrain github\t"), "==> Fetch report for github",
+			blue("\n\tfrain -q github\t"), "==> Summarize fetched result for github",
+			blue("\n\tfrain github incidents\t"), "==> Fetch only incident reports",
+			blue("\n\tfrain github incidents 2019-01-12\t"), "==> Fetch incidents from start date",
+			blue("\n\tfrain github incidents 2019-01-12 2019-05-05\t"), "==> Fetch incidents from start to end dates\n")
 
 		w.Flush()
 	}

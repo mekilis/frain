@@ -39,19 +39,22 @@ var (
 // GetService sends a POST request to the host server and then returns all information
 // relating to a developer tool to check
 func GetService(name string, startTime, endTime time.Time) (*Service, error) {
-	query := bytes.NewBuffer([]byte("{ \"query\": \"{getService(name:" + name + ")" +
-		"{id, name, statusPageUrl, provider, indicator, isActive, createdAt, updatedAt, components{id, name, status, description}," +
-		"incidents(startTime:\\\"" + parseDate(&startTime) + "\\\", endTime:\\\"" +
-		parseDate(&endTime) + "\\\"){id, name,impact, status, isActive, createdAt, shortlink, updatedAt," +
-		"incidentUpdates{id, body, status, createdAt, updatedAt}}}}\"}"))
+	q := fmt.Sprintf(`{"query": "{getService(name:%s)`+
+		`{id, name, statusPageUrl, provider, indicator, isActive, createdAt, updatedAt,`+
+		` components`+
+		`{id, name, status, description},`+
+		` incidents(startTime:\"%s\", endTime:\"%s\")`+
+		`{id, name,impact, status, isActive, createdAt, shortlink, updatedAt, incidentUpdates{id, body, status, createdAt, updatedAt}},`+
+		` highLevelComponents`+
+		`{id, name, status, description}}}"}`, name, parseDate(&startTime), parseDate(&endTime))
+	query := bytes.NewBuffer([]byte(q))
 	// TODO: fix resolvedAt issues
 	host := os.Getenv("FRAIN_HOST")
 	if host == "" {
 		host = "https://frain-server.herokuapp.com/graphql"
 	}
-	jsn := "application/json"
 
-	resp, err := http.Post(host, jsn, query)
+	resp, err := http.Post(host, "application/json", query)
 	if err != nil {
 		return nil, errHTTPPost
 	}
@@ -77,9 +80,8 @@ func GetServiceList() ([]string, error) {
 	if host == "" {
 		host = "https://frain-server.herokuapp.com/graphql"
 	}
-	jsn := "application/json"
 
-	resp, err := http.Post(host, jsn, query)
+	resp, err := http.Post(host, "application/json", query)
 	if err != nil {
 		return nil, errHTTPPost
 	}

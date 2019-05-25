@@ -36,8 +36,9 @@ type Service struct {
 	CreatedAt time.Time `json:"createdAt"`
 	UpdatedAt time.Time `json:"updatedAt"`
 
-	Components []Component `json:"components"`
-	Incidents  []Incident  `json:"incidents"`
+	Components          []Component     `json:"components"`
+	Incidents           []Incident      `json:"incidents"`
+	HighLevelComponents []SubComponents `json:"highLevelComponents"`
 }
 
 // Component contains information about a service's components
@@ -83,6 +84,15 @@ type IncidentUpdate struct {
 
 	CreatedAt time.Time `json:"createdAt"`
 	UpdatedAt time.Time `json:"updatedAt"`
+}
+
+// SubComponents is similar to Components with the added nesting feature
+type SubComponents struct {
+	ID            string          `json:"id"`
+	Name          string          `json:"name"`
+	Status        string          `json:"status"`
+	Description   string          `json:"description"`
+	SubComponents []SubComponents `json:"subComponents"`
 }
 
 // Init is a simple method to print various build info

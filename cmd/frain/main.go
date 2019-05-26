@@ -8,11 +8,13 @@ import (
 	"text/tabwriter"
 	"time"
 
+	"github.com/fatih/color"
 	"github.com/mekilis/frain"
-	color "gopkg.in/gookit/color.v1"
 )
 
 var (
+	green   = color.New(color.FgGreen).Sprint
+	yellow  = color.New(color.FgYellow).Sprint
 	config  = "Path to configuration file"
 	format  = "Select format to display query"
 	help    = "Displays this help"
@@ -31,10 +33,6 @@ var (
 )
 
 func init() {
-	blue := color.FgLightBlue.Render
-	green := color.FgGreen.Render
-	yellow := color.FgYellow.Render
-
 	flag.StringVar(configFlag, "c", "", config)
 	flag.StringVar(formatFlag, "f", "txt", format)
 	flag.BoolVar(helpFlag, "h", false, help)
@@ -59,11 +57,11 @@ func init() {
 			"\n\t<service> ", green("incidents <start time> <end time>\n\n"),
 			"Note that both start and end times have the format YYYY-MM-DD\n",
 			yellow("\nExamples:"),
-			blue("\n\tfrain github\t"), "==> Fetch report for github",
-			blue("\n\tfrain -q github\t"), "==> Summarize fetched result for github",
-			blue("\n\tfrain github incidents\t"), "==> Fetch only incident reports",
-			blue("\n\tfrain github incidents 2019-01-12\t"), "==> Fetch incidents from start date",
-			blue("\n\tfrain github incidents 2019-01-12 2019-05-05\t"), "==> Fetch incidents from start to end dates\n")
+			"\n\tfrain github\t==> Fetch report for github",
+			"\n\tfrain -q github\t==> Summarize fetched result for github",
+			"\n\tfrain github incidents\t==> Fetch only incident reports",
+			"\n\tfrain github incidents 2019-01-12\t==> Fetch incidents from start date",
+			"\n\tfrain github incidents 2019-01-12 2019-05-05\t==> Fetch incidents from start to end dates\n")
 
 		w.Flush()
 	}

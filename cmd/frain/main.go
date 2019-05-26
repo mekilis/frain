@@ -13,11 +13,13 @@ import (
 )
 
 var (
-	green   = color.New(color.FgGreen).Sprint
-	yellow  = color.New(color.FgYellow).Sprint
+	green  = color.New(color.FgGreen).Sprint
+	yellow = color.New(color.FgYellow).Sprint
+
 	config  = "Path to configuration file"
 	format  = "Select format to display query"
 	help    = "Displays this help"
+	full    = "Displays a full version of incident descriptions"
 	list    = "Lists the currently supported services"
 	quiet   = "Displays the service summary"
 	version = "Current version of frain"
@@ -25,6 +27,7 @@ var (
 	configFlag  = flag.String("config", "", config)
 	formatFlag  = flag.String("format", "txt", format)
 	helpFlag    = flag.Bool("help", false, help)
+	fullFlag    = flag.Bool("full", false, full)
 	listFlag    = flag.Bool("list", false, list)
 	quietFlag   = flag.Bool("quiet", false, quiet)
 	versionFlag = flag.Bool("version", false, version)
@@ -187,9 +190,9 @@ func main() {
 	}
 
 	if flagArgsLen < 2 {
-		report.All(*quietFlag)
+		report.All(*quietFlag, *fullFlag)
 	} else {
-		report.Incidents(*quietFlag)
+		report.Incidents(*quietFlag, *fullFlag)
 	}
 }
 

@@ -14,8 +14,8 @@ import (
 
 // Report is an interface implemented by types that generates report in different formats.
 type Report interface {
-	Incidents(bool)
-	All(bool)
+	Incidents(bool, bool)
+	All(bool, bool)
 }
 
 // Text is a construct to display the page information in text
@@ -31,8 +31,10 @@ var (
 	bold     = color.New(color.Bold)
 )
 
+const maxWidth = 40
+
 // Incidents implements the Report interface
-func (t Text) Incidents(quiet bool) {
+func (t Text) Incidents(quiet, full bool) {
 	if quiet {
 		n := 0
 		t1 := time.Now()
@@ -47,11 +49,11 @@ func (t Text) Incidents(quiet bool) {
 	}
 
 	w := new(tabwriter.Writer)
-	printIncidents(w, t.Data.Service.Incidents)
+	printIncidents(w, t.Data.Service.Incidents, full)
 }
 
 // All implements the Report interface
-func (t Text) All(quiet bool) {
+func (t Text) All(quiet, full bool) {
 	w := new(tabwriter.Writer)
 	service := t.Data.Service
 
@@ -75,7 +77,7 @@ func (t Text) All(quiet bool) {
 	bold.Println(titleService)
 	printComponents(w, service.Components)
 	fmt.Println()
-	printIncidents(w, service.Incidents)
+	printIncidents(w, service.Incidents, full)
 }
 
 func summarize(title string, components []Component, incidents []Incident) error {
@@ -122,7 +124,7 @@ func printComponents(w *tabwriter.Writer, comps []Component) {
 	}
 }
 
-func printIncidents(w *tabwriter.Writer, inc []Incident) {
+func printIncidents(w *tabwriter.Writer, inc []Incident, full bool) {
 	colIncidents := "\nDATE\tTIME\tIMPACT\tUPDATED\tDESCRIPTION\tSTATUS\t"
 
 	w.Init(os.Stdout, 0, 8, 2, '\t', tabwriter.AlignRight)
@@ -163,7 +165,15 @@ func printIncidents(w *tabwriter.Writer, inc []Incident) {
 			i.CreatedAt.Second(),
 		)
 
-		desc := wrap(description, 40) // less
+		desc := wrap(description, maxWidth)
+		n := len(desc)
+		if !full {
+			others := false
+			if n > 1 {
+				others = true
+			}
+			desc[0] = pad(desc[0], maxWidth, others)
+		}
 
 		fmt.Fprint(
 			w,
@@ -177,9 +187,11 @@ func printIncidents(w *tabwriter.Writer, inc []Incident) {
 				render(strings.Title(i.Status)),
 			),
 		)
-		n := len(desc)
-		for i := 1; i < n; i++ {
-			fmt.Fprint(w, "\n\t\t\t\t", desc[i], "\t\t")
+		if full {
+			n := len(desc)
+			for i := 1; i < n; i++ {
+				fmt.Fprint(w, "\n\t\t\t\t", desc[i], "\t\t")
+			}
 		}
 	}
 	fmt.Fprintln(w)
@@ -216,4 +228,31 @@ func wrap(s string, width int) []string {
 	}
 
 	return words
+}
+
+// This pads any string s with three dots ('.') for a given pad length
+func pad(s string, padLength int, others bool) string {
+	if n := len(s); padLength <= n || (!others && n < padLength) {
+		return s
+	}
+
+	s += strings.Repeat(".", padLength)
+	s = s[:padLength]
+	dots := 0
+	n := len(s)
+
+	for j := n - 1; j >= 0; j-- {
+		if s[j] != '.' {
+			break
+		}
+		dots++
+	}
+
+	if dots < 3 {
+		s = s[:padLength-3] + "..."
+	} else {
+		s = s[:padLength-dots+3]
+	}
+
+	return s
 }

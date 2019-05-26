@@ -6,12 +6,16 @@ import (
 	"strings"
 	"text/tabwriter"
 	"time"
+
+	wordwrap "github.com/mitchellh/go-wordwrap"
+
+	"github.com/fatih/color"
 )
 
 // Report is an interface implemented by types that generates report in different formats.
 type Report interface {
-	Incidents(bool)
-	All(bool)
+	Incidents(bool, bool)
+	All(bool, bool)
 }
 
 // Text is a construct to display the page information in text
@@ -19,8 +23,18 @@ type Text struct {
 	Data *Page
 }
 
+var (
+	yellow = color.New(color.FgYellow)
+	green  = color.New(color.FgHiGreen)
+
+	titleBar = color.New(color.FgBlack, color.BgWhite)
+	bold     = color.New(color.Bold)
+)
+
+const maxWidth = 40
+
 // Incidents implements the Report interface
-func (t Text) Incidents(quiet bool) {
+func (t Text) Incidents(quiet, full bool) {
 	if quiet {
 		n := 0
 		t1 := time.Now()
@@ -35,11 +49,11 @@ func (t Text) Incidents(quiet bool) {
 	}
 
 	w := new(tabwriter.Writer)
-	printIncidents(w, t.Data.Service.Incidents)
+	printIncidents(w, t.Data.Service.Incidents, full)
 }
 
 // All implements the Report interface
-func (t Text) All(quiet bool) {
+func (t Text) All(quiet, full bool) {
 	w := new(tabwriter.Writer)
 	service := t.Data.Service
 
@@ -60,11 +74,10 @@ func (t Text) All(quiet bool) {
 		return
 	}
 
-	fmt.Printf("----------------------------------\n")
-	fmt.Println(titleService)
+	bold.Println(titleService)
 	printComponents(w, service.Components)
 	fmt.Println()
-	printIncidents(w, service.Incidents)
+	printIncidents(w, service.Incidents, full)
 }
 
 func summarize(title string, components []Component, incidents []Incident) error {
@@ -88,13 +101,22 @@ func summarize(title string, components []Component, incidents []Incident) error
 }
 
 func printComponents(w *tabwriter.Writer, comps []Component) {
-	colComponents := "\nComponent Name\tStatus\n-------------\t-------"
+	colComponents := "\nCOMPONENT NAME\tSTATUS"
 	w.Init(os.Stdout, 0, 8, 2, '\t', tabwriter.AlignRight)
 
-	fmt.Fprintln(w, colComponents)
+	titleBar.Fprint(w, colComponents)
 	for _, c := range comps {
-		fmt.Fprintln(w, fmt.Sprintf("%s\t%s", strings.Title(c.Name), strings.Title(c.Status)))
+		words := strings.Split(c.Status, "_")
+		sb := strings.Builder{}
+		for _, word := range words {
+			sb.WriteString(strings.Title(word))
+			sb.WriteString(" ")
+		}
+		status := strings.TrimSpace(sb.String())
+
+		fmt.Fprint(w, fmt.Sprintf("\n%s\t%s", strings.Title(c.Name), render(status)))
 	}
+	fmt.Fprintln(w)
 	w.Flush()
 
 	if len(comps) == 0 {
@@ -102,20 +124,19 @@ func printComponents(w *tabwriter.Writer, comps []Component) {
 	}
 }
 
-func printIncidents(w *tabwriter.Writer, inc []Incident) {
-	colIncidents := "Date\tTime\tStatus\tDescription\tUpdated\n----------" +
-		"\t---------\t----------\t-------------\t------------"
+func printIncidents(w *tabwriter.Writer, inc []Incident, full bool) {
+	colIncidents := "\nDATE\tTIME\tIMPACT\tUPDATED\tDESCRIPTION\tSTATUS\t"
 
 	w.Init(os.Stdout, 0, 8, 2, '\t', tabwriter.AlignRight)
-	fmt.Println("Incident History\n-----------------")
-
-	fmt.Fprintln(w, colIncidents)
+	bold.Println("Incident History")
 
 	n := len(inc)
 	if n == 0 {
 		fmt.Println("No incident reports")
 		return
 	}
+
+	titleBar.Fprint(w, colIncidents)
 
 	for j := n - 1; j >= 0; j-- {
 		i := inc[j]
@@ -124,22 +145,114 @@ func printIncidents(w *tabwriter.Writer, inc []Incident) {
 			elapsed = "     -"
 		}
 
-		fmt.Fprintln(
+		description := "-"
+		for _, x := range i.IncidentUpdates {
+			if i.Status == x.Status {
+				description = x.Body
+				break
+			}
+		}
+
+		dte := fmt.Sprintf("%s %d, %d",
+			i.CreatedAt.Month(),
+			i.CreatedAt.Day(),
+			i.CreatedAt.Year(),
+		)
+
+		tme := fmt.Sprintf("%d:%d:%d",
+			i.CreatedAt.Hour(),
+			i.CreatedAt.Minute(),
+			i.CreatedAt.Second(),
+		)
+
+		desc := wrap(description, maxWidth)
+		n := len(desc)
+		if !full {
+			others := false
+			if n > 1 {
+				others = true
+			}
+			desc[0] = pad(desc[0], maxWidth, others)
+		}
+
+		fmt.Fprint(
 			w,
-			fmt.Sprintf("%s %d %d\t%d:%d:%d\t%s\t%s\t%s",
-				i.CreatedAt.Month(),
-				i.CreatedAt.Day(),
-				i.CreatedAt.Year(),
+			fmt.Sprintf("\n%s\t%s\t%s\t%s\t%s\t%s\t",
+				dte,
+				tme,
 
-				i.CreatedAt.Hour(),
-				i.CreatedAt.Minute(),
-				i.CreatedAt.Second(),
-
-				i.Status,
-				i.Impact,
+				strings.Title(i.Impact),
 				elapsed,
+				desc[0],
+				render(strings.Title(i.Status)),
 			),
 		)
+		if full {
+			n := len(desc)
+			for i := 1; i < n; i++ {
+				fmt.Fprint(w, "\n\t\t\t\t", desc[i], "\t\t")
+			}
+		}
 	}
+	fmt.Fprintln(w)
 	w.Flush()
+}
+
+func render(status string) string {
+	var r = color.New()
+	s := strings.Split(strings.ToLower(status), " ")
+	switch s[0] {
+	case "operational", "resolved":
+		r.Add(color.FgGreen)
+	case "degraded", "under", "under_maintenance", "investigating":
+		r.Add(color.FgYellow)
+	case "outage", "critical":
+		r.Add(color.FgRed)
+	default:
+		r.Add(color.FgWhite)
+	}
+
+	return r.Sprint(status)
+}
+
+func wrap(s string, width int) []string {
+	if width < 0 {
+		return []string{"-"}
+	}
+
+	s = wordwrap.WrapString(s, uint(width))
+	words := strings.Split(s, "\n")
+	n := len(words)
+	if n == 0 {
+		return []string{"-"}
+	}
+
+	return words
+}
+
+// This pads any string s with three dots ('.') for a given pad length
+func pad(s string, padLength int, others bool) string {
+	if n := len(s); padLength <= n || (!others && n < padLength) {
+		return s
+	}
+
+	s += strings.Repeat(".", padLength)
+	s = s[:padLength]
+	dots := 0
+	n := len(s)
+
+	for j := n - 1; j >= 0; j-- {
+		if s[j] != '.' {
+			break
+		}
+		dots++
+	}
+
+	if dots < 3 {
+		s = s[:padLength-3] + "..."
+	} else {
+		s = s[:padLength-dots+3]
+	}
+
+	return s
 }

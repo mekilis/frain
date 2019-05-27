@@ -49,6 +49,7 @@ func init() {
 		fmt.Fprint(w, yellow("\nUsage:"),
 			"\n\tfrain ", green("[options]"), " <args>...\n",
 			yellow("\nOptions:"),
+			green("\n\t\t--full\t"), "Displays the full version of incident descriptions",
 			green("\n\t-c <path>,\t--config=<path>\t"), "Specifies path to configuration file with a\n\t\t\tlist of services to check",
 			green("\n\t-f <format>,\t--format=<format>\t"), "Specifies result output format i.e. txt, json\n\t\t\tor xml (txt by default)",
 			green("\n\t-h,\t--help\t"), "Displays this help message",

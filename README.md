@@ -2,6 +2,8 @@
 
 Frain makes it possible to check the availability of many developer tools or services in the terminal.
 
+![](screenshot.gif)
+
 Services currently supported are:
 * GitHub
 * Fastly
@@ -60,6 +62,8 @@ $ curl -L -o frain https://github.com/mekilis/frain/releases/download/v0.1.0/fra
 Usage:
         frain [options] <args>...
 
+Options:
+                        --full                  Displays the full version of incident descriptions
         -c <path>,      --config=<path>         Specifies path to configuration file with a
                                                 list of services to check
         -f <format>,    --format=<format>       Specifies result output format i.e. txt, json

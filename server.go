@@ -44,7 +44,7 @@ func GetService(name string, startTime, endTime time.Time) (*Service, error) {
 		` components`+
 		`{id, name, status, description},`+
 		` incidents(startTime:\"%s\", endTime:\"%s\")`+
-		`{id, name,impact, status, isActive, createdAt, shortlink, updatedAt, resolvedAt, incidentUpdates{id, body, status, createdAt, updatedAt}},`+
+		`{id, name,impact, status, isActive, createdAt, shortlink, updatedAt, incidentUpdates{id, body, status, createdAt, updatedAt}},`+
 		` highLevelComponents`+
 		`{id, name, status, description}}}"}`, name, parseDate(&startTime), parseDate(&endTime))
 	query := bytes.NewBuffer([]byte(q))

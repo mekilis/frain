@@ -199,14 +199,15 @@ func printIncidents(w *tabwriter.Writer, inc []Incident, full bool) {
 }
 
 func render(status string) string {
+	// incident status updates have no underscore whereas component status updates does
 	var r = color.New()
 	s := strings.Split(strings.ToLower(status), " ")
 	switch s[0] {
-	case "operational", "resolved":
+	case "operational", "resolved", "postmortem":
 		r.Add(color.FgGreen)
-	case "degraded", "under", "under_maintenance", "investigating":
+	case "partial", "under", "investigating", "identified": // partial_outage, under_maintenance
 		r.Add(color.FgYellow)
-	case "outage", "critical":
+	case "degraded", "major", "critical": // degraded_performance, major_outage
 		r.Add(color.FgRed)
 	default:
 		r.Add(color.FgWhite)
